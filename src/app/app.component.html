@@ -1,0 +1,73 @@
+<hr>
+<!--Стилизованный multiselect
+<div class="container">
+  <button type = "button" class = "btn btn-primary" (click) = "toggleShowList()">Выбрать валюты</button>
+    <div *ngIf = "showList">
+      <div class="row">
+        <div *ngIf = "currencyList.length > 0" (click) = "AddAllCurrency()" class="col-xs-3 btn btn-success">Выбрать все</div>
+        <div *ngFor = "let currency of currencyList" (click)="AddCurrency(currency)" class="col-xs-3 btn btn-default">{{currency.Cur_Name}}</div>
+      </div>
+    </div>
+
+
+  <table class = "table table-striped table-hover" *ngIf="selected.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Аббревиатура</th>
+        <th>Наименование</th>
+        <th>Оффициальный курс</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor = "let current of selected" (click) = "RemoveCurrency(current)" >
+        <td>{{current.Cur_ID}}</td>
+        <td>{{current.Cur_Abbreviation}}</td>
+        <td>{{current.Cur_Name}}</td>
+        <td>{{current.Cur_OfficialRate}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+-->
+<!--HTML multiselect
+<div class="container">
+  <div class="raw">
+    <h2>Выберите валюты</h2>
+      <form class="col-md-4">
+        <select #selectList multiple class="col-xs-12">
+          <option (click)="AddAllCurrency()">Выбрать все</option>
+          <option *ngFor = "let currency of currencyList" (dblclick)="AddCurrency(currency)" >
+            {{currency.Cur_Name}}
+          </option>
+        </select>
+        <button (click)="AddCurrencyList(selectList.selectedOptions) "class = "btn btn-default">Добавить</button>
+      </form>
+
+    <div class="col-md-8">
+      <table *ngIf="selected.length > 0" class = "table table-striped table-hover">
+        <thead>
+        <tr>
+          <th (click) = "SortSelected('byID')">ID<span class="caret"></span></th>
+          <th (click) = "SortSelected('byAbbreviation')">Аббревиатура<span class="caret"></span></th>
+          <th (click) = "SortSelected('byName')">Наименование<span class="caret"></span></th>
+          <th (click) = "SortSelected('byRate')">Оффициальный курс<span class="caret"></span></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor = "let current of selected" (click) = "RemoveCurrency(current)">
+          <td>{{current.Cur_ID}}</td>
+          <td>{{current.Cur_Abbreviation}}</td>
+          <td>
+            {{current.Cur_Name}}
+          </td>
+          <td>{{current.Cur_OfficialRate}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>-->
+<div class="container">
+    <app-currency-form></app-currency-form>
+</div>
