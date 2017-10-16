@@ -20,13 +20,16 @@ export class CurrencyFormComponent implements OnInit {
   public error;
 
   constructor( private currencyService : CurrencyService) {
-    this.error = { msg: '' , isFormValid : true}
+    this.error = { msg: '' , formValid : true};
+    this.currencyRateOnRange = [];
     this.selectedCurrenciesNames = [];
+    this.currencyList = [];
   }
 
   ngOnInit(){
-    this.currencyService.getCurrencyList().subscribe((data)=>{
-        this.currencyList = data;
+    this.currencyService.getCurrencyList().then((data)=>{
+      console.log(data);
+      this.currencyList = data;
     });
   }
 
@@ -41,102 +44,43 @@ export class CurrencyFormComponent implements OnInit {
     console.log(this.selectedCurrenciesNames);
 
     if(this.selectedCurrenciesNames.length == 0){
-      this.error.isFormValid = false;
+      this.error.formValid = false;
       this.error.msg = "Выберите валюту(ы)";
       return false;
     }else{
-      this.error.isFormValid = true;
+      this.error.formValid = true;
       this.error.msg = '';
     }
 
-
-      let dateFrom = this.currencyFirstDate.split("-",3);
-      let dateTo = this.currencySecondDate.split("-",3);
-      let dateNow = new Date();
-
-      if( ( dateFrom[1] !== dateTo[1] && dateFrom[2] - dateTo[2] < 14) ||
-          ( dateTo[2] - dateFrom[2] < 0 ) ||
-          ( dateFrom[0] !== dateTo[0] ) ||
-          ( dateTo[2] - dateFrom[2] > 14) ||
-          ( dateFrom[1] === dateTo[1] && dateTo[2] > dateNow.getDate())
-      ){
-        this.error.isFormValid = false;
-        this.error.msg = "Выберите корректный промежуток времени. Период времени можно выбирать не более двух недель";
-        return false;
-      }
-      else
-        {
-          this.error.isFormValid = true;
-          this.error.msg = "";
-        }
-
-
-
-      let currency;
-      this.selectedCurrencies = [];
-      for(let currencyName of this.selectedCurrenciesNames){
-        currency = this.FindCurrencyByName(currencyName);
-        for(let i = dateFrom[2]; i <= dateTo[2]; i++){
-          console.log(currency.Cur_ID, dateFrom[0]+'-'+dateFrom[1]+'-0'+ +i);
-          this.currencyService.getCurrencyRate(currency.Cur_ID, dateFrom[0]+'-'+dateFrom[1]+'-'+ +i)
-              .subscribe((data) => this.selectedCurrencies.push(data));
-        }
-      }
-
-  }
-
-  /*AddCurrencyList(){
-    console.log(this.selectedCurrenciesNames);
-
-    if(this.selectedCurrenciesNames.length == 0){
-      this.error.isFormValid = false;
-      this.error.msg = "Выберите валюту(ы)";
-      return false;
-    }else{
-      this.error.isFormValid = true;
-      this.error.msg = '';
-    }
-
-
-    let dateFrom = this.currencyFirstDate.split("-",3);
-    let dateTo = this.currencySecondDate.split("-",3);
+    let dateFrom = new Date(this.currencyFirstDate);
+    let dateTo = new Date(this.currencySecondDate);
     let dateNow = new Date();
 
-    if( ( dateFrom[1] !== dateTo[1] && dateFrom[2] - dateTo[2] < 14) ||
-        ( dateTo[2] - dateFrom[2] < 0 ) ||
-        ( dateFrom[0] !== dateTo[0] ) ||
-        ( dateTo[2] - dateFrom[2] > 14) ||
-        ( dateFrom[1] === dateTo[1] && dateTo[2] > dateNow.getDate())
+    if( ( dateFrom.getMonth() !== dateFrom.getMonth() && dateFrom.getDate() - dateTo.getDate() < 14) ||
+        ( dateTo.getDate() - dateFrom.getDate() < 0 ) ||
+        ( dateFrom.getFullYear() !== dateTo.getFullYear() ) ||
+        ( dateTo.getDate() - dateFrom.getDate() > 14) ||
+        ( dateFrom.getMonth() === dateTo.getMonth() && dateTo.getDate() > dateNow.getDate())
     ){
-      this.error.isFormValid = false;
+      this.error.formValid = false;
       this.error.msg = "Выберите корректный промежуток времени. Период времени можно выбирать не более двух недель";
       return false;
     }
     else
     {
-      this.error.isFormValid = true;
+      this.error.formValid = true;
       this.error.msg = "";
     }
-
-
 
     let currency;
     this.selectedCurrencies = [];
     for(let currencyName of this.selectedCurrenciesNames){
       currency = this.FindCurrencyByName(currencyName);
-      this.GetCurrencyRateOnRange(currency,this.currencyFirstDate,this.currencySecondDate).subscribe(this.selectedCurrencies.push(this.currencyRateOnRange))
+      this.currencyService.getCurrencyRateOnRange(currency.Cur_ID,
+                                                  dateFrom.getFullYear()+'-'+dateFrom.getMonth()+'-'+dateFrom.getDate(),
+                                                  dateTo.getFullYear()+'-'+dateTo.getMonth()+'-'+dateTo.getDate() ).then(data => {this.selectedCurrencies.push(data);});
     }
-
   }
-
-  GetCurrencyRateOnRange(currency, from, to){
-    let dateFrom = from.split("-",3);
-    let dateTo = to.split("-",3);
-
-    for(let i = dateFrom[2]; i <= dateTo[2]; i++){
-      this.currencyService.getCurrencyRate(currency.Cur_ID, dateFrom[0]+'-'+dateFrom[1]+'-'+ +i).subscribe((data) => this.currencyRateOnRange.push(data));
-    }
-  }*/
 
   ClearSelectedCurrencies(){
     this.selectedCurrenciesNames = [];
