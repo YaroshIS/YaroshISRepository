@@ -29,6 +29,10 @@ export class CurrencyFormComponent implements OnInit {
       this.error.formValid = false;
       this.error.msg = "Выберите валюту(ы)";
       return false;
+    }else if(this.selectedCurrenciesNames.length > 15){
+      this.error.formValid = false;
+      this.error.msg = "Количество валют не должно превышать 15";
+      return false;
     }else{
       this.error.formValid = true;
       this.error.msg = '';

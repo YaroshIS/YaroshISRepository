@@ -8,6 +8,7 @@ import { CurrencyListComponent } from './currency-list/currency-list.component';
 import { CurrencyFormComponent } from './currency-form/currency-form.component';
 import { CurrencyService }       from './currency.service';
 import { CurrencyCounterComponent } from './currency-counter/currency-counter.component';
+import { ReversePipe } from './reverse.pipe';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { CurrencyCounterComponent } from './currency-counter/currency-counter.co
     CurrencyListComponent,
     CurrencyFormComponent,
     CurrencyCounterComponent,
+    ReversePipe,
   ],
   imports: [
     BrowserModule,
