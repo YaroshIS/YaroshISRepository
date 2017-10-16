@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 
 import { CurrencyService }   from './../currency.service';
 
@@ -9,11 +9,9 @@ import { CurrencyService }   from './../currency.service';
   providers: [ CurrencyService ]
 })
 export class CurrencyFormComponent implements OnInit {
-  public currencyList;
+  @Input() currencyList;
+  @Output() addList = new EventEmitter();
   public selectedCurrenciesNames;
-  public selectedCurrencies;
-
-  private currencyRateOnRange;
 
   public currencyFirstDate;
   public currencySecondDate;
@@ -21,28 +19,12 @@ export class CurrencyFormComponent implements OnInit {
 
   constructor( private currencyService : CurrencyService) {
     this.error = { msg: '' , formValid : true};
-    this.currencyRateOnRange = [];
     this.selectedCurrenciesNames = [];
-    this.currencyList = [];
   }
 
-  ngOnInit(){
-    this.currencyService.getCurrencyList().then((data)=>{
-      console.log(data);
-      this.currencyList = data;
-    });
-  }
+  ngOnInit(){  }
 
-  FindCurrencyByName(currencyName){
-    for(let currency of this.currencyList){
-      if(currencyName == currency.Cur_Name)
-        return currency;
-    }
-  }
-
-  AddCurrencyList(){
-    console.log(this.selectedCurrenciesNames);
-
+  AddCurrencies(){
     if(this.selectedCurrenciesNames.length == 0){
       this.error.formValid = false;
       this.error.msg = "Выберите валюту(ы)";
@@ -59,6 +41,7 @@ export class CurrencyFormComponent implements OnInit {
     if( ( dateFrom.getMonth() !== dateFrom.getMonth() && dateFrom.getDate() - dateTo.getDate() < 14) ||
         ( dateTo.getDate() - dateFrom.getDate() < 0 ) ||
         ( dateFrom.getFullYear() !== dateTo.getFullYear() ) ||
+        ( dateFrom.getMonth() < dateTo.getMonth()-1 ) ||
         ( dateTo.getDate() - dateFrom.getDate() > 14) ||
         ( dateFrom.getMonth() === dateTo.getMonth() && dateTo.getDate() > dateNow.getDate())
     ){
@@ -72,19 +55,12 @@ export class CurrencyFormComponent implements OnInit {
       this.error.msg = "";
     }
 
-    let currency;
-    this.selectedCurrencies = [];
-    for(let currencyName of this.selectedCurrenciesNames){
-      currency = this.FindCurrencyByName(currencyName);
-      this.currencyService.getCurrencyRateOnRange(currency.Cur_ID,
-                                                  dateFrom.getFullYear()+'-'+dateFrom.getMonth()+'-'+dateFrom.getDate(),
-                                                  dateTo.getFullYear()+'-'+dateTo.getMonth()+'-'+dateTo.getDate() ).then(data => {this.selectedCurrencies.push(data);});
-    }
+    let output = [this.selectedCurrenciesNames, this.currencyFirstDate, this.currencySecondDate];
+    this.addList.emit(output);
   }
 
   ClearSelectedCurrencies(){
     this.selectedCurrenciesNames = [];
-    this.selectedCurrencies = [];
     this.currencySecondDate = '';
     this.currencyFirstDate = '';
   }

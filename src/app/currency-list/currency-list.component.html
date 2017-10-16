@@ -1,14 +1,16 @@
-<table *ngIf="selectedList.length > 0" class = "table table-striped table-hover">
-  <tbody>
+<table *ngIf="currenciesRates.length > 0" class = "table table-striped table-hover">
+  <thead>
   <tr>
-    <td>
+    <th>
       <strong>Дата: </strong>
-    </td>
-    <td *ngFor="let currencyOnRange of selectedList[0]">
+    </th>
+    <th *ngFor="let currencyOnRange of currenciesRates[0]" align="center">
       {{currencyOnRange.Date.slice(0,10)}}
-    </td>
+    </th>
   </tr>
-  <tr *ngFor="let currencyOnRange of selectedList">
+  </thead>
+  <tbody>
+  <tr *ngFor="let currencyOnRange of currenciesRates">
     <td>
       <strong>{{currencyOnRange[0].Cur_Name}}</strong>
     </td>

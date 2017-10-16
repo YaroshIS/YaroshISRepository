@@ -29,7 +29,7 @@
         <div class="form-group">
             <button class="btn btn-primary form-control"
                     [disabled]="date.invalid"
-                    (click)="AddCurrencyList()">
+                    (click)="AddCurrencies()">
                 Получить
             </button>
             <button class="btn btn-danger"
@@ -41,4 +41,3 @@
      class="alert alert-danger">
     {{error.msg}}
 </div>
-<app-currency-list [selectedList]="selectedCurrencies"></app-currency-list>
