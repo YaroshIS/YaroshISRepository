@@ -11,12 +11,12 @@
   </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let currencyDates of currenciesRates[0] | reverse; let i = index">
+    <tr *ngFor="let currencyDates of currenciesRates[0]; let i = index;">
       <td>
-        <strong>{{currencyDates.Date.slice(5,10).replace('-','.')}}</strong>
+        <strong>{{currenciesRates[0][currenciesRates[0].length - i - 1].Date.slice(5,10).replace('-','.')}}</strong>
       </td>
-      <td *ngFor = "let currencyNames of currenciesRates; let j = index">
-        {{currenciesRates[j][i].Cur_OfficialRate}}
+      <td *ngFor="let currencyNames of currenciesRates; let j = index">
+        {{currenciesRates[j][currenciesRates[0].length - i - 1].Cur_OfficialRate}}
       </td>
     </tr>
   </tbody>

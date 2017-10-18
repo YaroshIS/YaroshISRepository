@@ -211,7 +211,7 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionHello()
+    public function actionGetCurrencies()
     {
         header("Access-Control-Allow-Origin: *");
 

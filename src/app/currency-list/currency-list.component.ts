@@ -9,7 +9,8 @@ import {CurrencyService}   from './../currency.service';
 })
 export class CurrencyListComponent implements OnInit {
     @Input() currenciesRates;
-    
+    private countOfDates;
+
     constructor(private currencyService: CurrencyService) {
     }
     

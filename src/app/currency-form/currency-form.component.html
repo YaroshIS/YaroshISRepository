@@ -5,31 +5,31 @@
                 <label>Валюта:</label>
             </div>
 
-            <select multiple autofocus class="form-control"
-                    #currencies="ngModel"
-                    [(ngModel)]="selectedCurrenciesNames"
-                    required>
-                <option *ngFor="let currency of currencyList">
-                    {{currency.Cur_Name}}
-                </option>
-            </select>
+            <button  class="btn btn-primary"
+                     (click)="ToggleShowList()"
+                     type="button"
+            >
+                Выбрать валюты
+            </button>
+
         </div>
 
         <div class="form-group">
             На дату с:<input class="form-control" type="date"
                             [(ngModel)]="currencyFirstDate"
-                            #date="ngModel"
+                            #dateFrom="ngModel"
                             required>
             по: <input class="form-control" type="date"
                        [(ngModel)]="currencySecondDate"
-                       #date="ngModel"
+                       #dateTo="ngModel"
                        required>
         </div>
 
         <div class="form-group">
             <button class="btn btn-primary form-control"
-                    [disabled]="date.invalid"
-                    (click)="AddCurrencies()">
+                    [disabled]="dateFrom.invalid || dateTo.invalid"
+                    (click)="AddCurrencies()"
+            >
                 Получить
             </button>
             <button class="btn btn-danger"
@@ -37,7 +37,29 @@
         </div>
 
 </div>
+
 <div *ngIf="!error.formValid"
-     class="alert alert-danger">
+     class="alert alert-danger"
+>
     {{error.msg}}
 </div>
+
+<div *ngIf = "showList" class="listOfCurrencies">
+    <div class="alert-info">
+        Выбирать можно не более 10 валют
+    </div>
+    <div>
+        <div class="col-xs-2 btn btn-default"
+                id="btnCurrency"
+                *ngFor = "let currency of currencyList"
+                (click)="AddCurrency(currency)"
+        >
+            <i class="glyphicon glyphicon-ok"
+               *ngIf="selectedCurrencies.indexOf(currency) != -1"
+               aria-hidden="true"></i>
+            {{currency.Cur_Name}}
+        </div>
+    </div>
+</div>
+
+

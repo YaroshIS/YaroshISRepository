@@ -11,7 +11,9 @@ import { CurrencyService }   from './../currency.service';
 export class CurrencyFormComponent implements OnInit {
   @Input() currencyList;
   @Output() addList = new EventEmitter();
-  public selectedCurrenciesNames;
+  public selectedCurrencies;
+
+  private showList;
 
   public currencyFirstDate;
   public currencySecondDate;
@@ -19,17 +21,29 @@ export class CurrencyFormComponent implements OnInit {
 
   constructor( private currencyService : CurrencyService) {
     this.error = { msg: '' , formValid : true};
-    this.selectedCurrenciesNames = [];
+    this.selectedCurrencies = [];
+    this.showList = false;
   }
 
   ngOnInit(){  }
 
+  ToggleShowList(){
+    this.showList = !this.showList
+  }
+
+  AddCurrency(currency){
+    if(this.selectedCurrencies.indexOf(currency) != -1)
+      this.selectedCurrencies.splice(this.selectedCurrencies.indexOf(currency),1)
+    else if(this.selectedCurrencies.length < 10)
+        this.selectedCurrencies.push(currency);
+  }
+  
   AddCurrencies(){
-    if(this.selectedCurrenciesNames.length == 0){
+    if(this.selectedCurrencies.length == 0){
       this.error.formValid = false;
       this.error.msg = "Выберите валюту(ы)";
       return false;
-    }else if(this.selectedCurrenciesNames.length > 15){
+    }else if(this.selectedCurrencies.length > 15){
       this.error.formValid = false;
       this.error.msg = "Количество валют не должно превышать 15";
       return false;
@@ -55,12 +69,14 @@ export class CurrencyFormComponent implements OnInit {
       this.error.msg = "";
     }
 
-    let output = [this.selectedCurrenciesNames, this.currencyFirstDate, this.currencySecondDate];
+    console.log(dateFrom.getMonth());
+
+    let output = [this.selectedCurrencies, this.currencyFirstDate, this.currencySecondDate];
     this.addList.emit(output);
   }
 
   ClearSelectedCurrencies(){
-    this.selectedCurrenciesNames = [];
+    this.selectedCurrencies = [];
     this.currencySecondDate = '';
     this.currencyFirstDate = '';
   }
