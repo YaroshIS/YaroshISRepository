@@ -19,7 +19,7 @@ export class CurrencyCounterComponent implements OnInit {
 
   ngOnInit() {
     this.currencyService.getCurrencyList()
-        .then((data) => {this.currencyList = data; console.log(data)});
+        .then((data) => this.currencyList = data);
   }
 
   FindCurrencyByName(currencyName){
@@ -30,7 +30,6 @@ export class CurrencyCounterComponent implements OnInit {
   }
 
   AddSelectedCurrencies(selectedCurrenciesNames: string[]){
-    console.log(selectedCurrenciesNames);
     let currenciesRates= selectedCurrenciesNames[0];
     let dateFrom = new Date(selectedCurrenciesNames[1]);
     let dateTo = new Date(selectedCurrenciesNames[2]);
