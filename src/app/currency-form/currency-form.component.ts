@@ -1,12 +1,9 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 
-import { CurrencyService }   from './../currency.service';
-
 @Component({
   selector: 'app-currency-form',
   templateUrl: './currency-form.component.html',
   styleUrls: ['./currency-form.component.css'],
-  providers: [ CurrencyService ]
 })
 export class CurrencyFormComponent implements OnInit {
   @Input() currencyList;
@@ -19,7 +16,7 @@ export class CurrencyFormComponent implements OnInit {
   public currencySecondDate;
   public error;
 
-  constructor( private currencyService : CurrencyService) {
+  constructor() {
     this.error = { msg: '' , formValid : true};
     this.selectedCurrencies = [];
     this.showList = false;
@@ -28,7 +25,7 @@ export class CurrencyFormComponent implements OnInit {
   ngOnInit(){  }
 
   ToggleShowList(){
-    this.showList = !this.showList
+    this.showList = !this.showList;
   }
 
   AddCurrency(currency){
@@ -37,7 +34,8 @@ export class CurrencyFormComponent implements OnInit {
     else if(this.selectedCurrencies.length < 10)
         this.selectedCurrencies.push(currency);
   }
-  
+
+
   AddCurrencies(){
     if(this.selectedCurrencies.length == 0){
       this.error.formValid = false;
@@ -56,11 +54,11 @@ export class CurrencyFormComponent implements OnInit {
     let dateTo = new Date(this.currencySecondDate);
     let dateNow = new Date();
 
-    if( (+dateTo - +dateFrom > 1000*60*60*24*14) ||
+    if( (+dateTo - +dateFrom > 1000*60*60*24*30) ||
         (+dateFrom > +dateTo) )
     {
       this.error.formValid = false;
-      this.error.msg = "Выберите корректный промежуток времени. Период времени можно выбирать не более двух недель";
+      this.error.msg = "Выберите корректный промежуток времени. Период времени можно выбирать не более 30 суток";
       return false;
     }
     else
@@ -79,6 +77,9 @@ export class CurrencyFormComponent implements OnInit {
     this.selectedCurrencies = [];
     this.currencySecondDate = '';
     this.currencyFirstDate = '';
+    this.error.formValid = true;
+    this.error.msg = "";
+    this.showList = false;
   }
 
 }

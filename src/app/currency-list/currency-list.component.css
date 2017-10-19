@@ -1,3 +1,43 @@
 .table th:hover{
     cursor: pointer;
 }
+table.head{
+    width:890px;
+    margin:10px 0 0;
+    border:1px solid #36140a;
+    border-bottom:none;
+    background:#f8eabb;
+}
+table.head th.first{
+    width:200px;
+    border-right:1px solid
+}
+div.table{
+    width:890px;
+    border:none;
+}
+div.table .left{
+    width:200px;
+}
+div.table .left span{
+    display:block;
+}
+div.table .right{
+    width:690px;
+    overflow:auto;
+}
+div.table .right table.calendar{
+    margin:0;
+    background:#f8eabb;
+    width:960px;
+}
+table.calendar td, table.calendar th{
+    border:1px solid #36140a;
+}
+table.calendar td.subject{
+    width:200px;
+}
+table.calendar td{
+    width:34px;
+    height:53px;
+}

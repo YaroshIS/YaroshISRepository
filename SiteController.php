@@ -24,7 +24,7 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
+        'access' => [
                 'class' => AccessControl::className(),
                 'only' => ['logout', 'signup'],
                 'rules' => [
@@ -213,9 +213,16 @@ class SiteController extends Controller
 
     public function actionGetCurrencies()
     {
-        header("Access-Control-Allow-Origin: *");
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
 
-        //$currencies = file_get_contents('http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
+        $response->headers->add('Access-Control-Allow-Origin', 'http://localhost:4200');
+
+        if(!$request->isGet){
+            $response->statusCode = 400;
+            $response->send();
+            exit;
+        }
 
         $curl_handler = curl_init();
         curl_setopt($curl_handler, CURLOPT_URL, 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
@@ -224,13 +231,24 @@ class SiteController extends Controller
         curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
 
         $query = curl_exec($curl_handler);
+
+        if($query == false){
+            $response->statusCode = 500;
+        }else{
+            $response->content = $query;
+        }
+
         curl_close($curl_handler);
 
-        echo $query;
+        return $response->send();
     }
 
     public function actionGetCurrencyRateOnRange(){
-        header('Access-Control-Allow-Origin: *');
+
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+
+        $response->headers->add('Access-Control-Allow-Origin', 'http://localhost:4200');
 
         $dateFrom = new \DateTime($_GET['dateFrom']);
         $dateTo = new \DateTime($_GET['dateTo']);
@@ -245,7 +263,6 @@ class SiteController extends Controller
 
         $query = "[";
         for($i = 0; $i <= $diff; $i++){
-            $this->log_msg($i);
             $url = 'http://www.nbrb.by/API/ExRates/Rates/'
                 .$_GET['curid']
                 .'?onDate='
@@ -259,15 +276,41 @@ class SiteController extends Controller
 
             $query .= curl_exec($curl_handler).',';
 
+            if($query == false){
+                $response->statusCode = 500;
+                $response->send();
+            }
+
             $dateFrom->add(new \DateInterval('P1D'));
         }
         $query = rtrim($query, ',');
         $query .= ']';
-        echo $query;
+
+        $response->content = $query;
+
+        $response->send();
 
         curl_close($curl_handler);
-        $this->log_msg('Hello from method GetCurrencyRateOnRange');
         exit;
+    }
+
+    public function actionPostRequest(){
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+
+        $post = $request->post();
+        $msg = $request->post('msg');
+        $this->log_msg('POST: '.$post['msg']);
+        $this->log_msg('MGS: '.json_decode($msg));
+
+        $response->headers->add('Access-Control-Allow-Origin', "http://localhost:4200/");
+        $response->headers->add('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token, Authorization');
+        $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+
+
+
+        $this->log_msg('HELLO MAAAN');
+        $response->send();
     }
 
     private function log_msg($msg){

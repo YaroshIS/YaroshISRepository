@@ -1,7 +1,5 @@
 import {Component, OnInit, Input} from '@angular/core';
 
-import {CurrencyService}   from './../currency.service';
-
 @Component({
     selector: 'app-currency-list',
     templateUrl: './currency-list.component.html',
@@ -9,9 +7,8 @@ import {CurrencyService}   from './../currency.service';
 })
 export class CurrencyListComponent implements OnInit {
     @Input() currenciesRates;
-    private countOfDates;
 
-    constructor(private currencyService: CurrencyService) {
+    constructor() {
     }
     
     ngOnInit() {
