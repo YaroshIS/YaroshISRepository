@@ -24,6 +24,12 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
+            'corsFilter' => [
+            'class' => \yii\filters\Cors::className(),
+            'cors' => [
+                'Access-Control-Allow-Origin' => ['*'],
+            ]
+        ],
         'access' => [
                 'class' => AccessControl::className(),
                 'only' => ['logout', 'signup'],
@@ -248,10 +254,15 @@ class SiteController extends Controller
         $request = Yii::$app->request;
         $response = Yii::$app->response;
 
-        $response->headers->add('Access-Control-Allow-Origin', 'http://localhost:4200');
+        $response->headers->add('Access-Control-Allow-Origin', "*");
+        $response->headers->add('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token, Authorization');
+        $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
 
-        $dateFrom = new \DateTime($_GET['dateFrom']);
-        $dateTo = new \DateTime($_GET['dateTo']);
+
+        $dateFrom = new \DateTime(json_decode($request->post('dateFrom')));
+        $dateTo = new \DateTime(json_decode($request->post('dateTo')));
+        $curID = $request->post('curid');
+
         $diff = $dateFrom->diff($dateTo)->days;
 
         $curl_handler = curl_init();
@@ -264,7 +275,7 @@ class SiteController extends Controller
         $query = "[";
         for($i = 0; $i <= $diff; $i++){
             $url = 'http://www.nbrb.by/API/ExRates/Rates/'
-                .$_GET['curid']
+                .$curID
                 .'?onDate='
                 .$dateFrom->format("Y")
                 .'-'.
@@ -295,21 +306,17 @@ class SiteController extends Controller
     }
 
     public function actionPostRequest(){
+
         $request = Yii::$app->request;
         $response = Yii::$app->response;
 
-        $post = $request->post();
         $msg = $request->post('msg');
-        $this->log_msg('POST: '.$post['msg']);
-        $this->log_msg('MGS: '.json_decode($msg));
+        $this->log_msg($msg);
 
-        $response->headers->add('Access-Control-Allow-Origin', "http://localhost:4200/");
+        $response->headers->add('Access-Control-Allow-Origin', "*");
         $response->headers->add('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token, Authorization');
         $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
 
-
-
-        $this->log_msg('HELLO MAAAN');
         $response->send();
     }
 
@@ -318,4 +325,13 @@ class SiteController extends Controller
         fwrite($logFile, $msg."\n");
         fclose($logFile);
     }
+
+    public function beforeAction($action)
+    {
+        if($action->id == "get-currency-rate-on-range")
+            $this->enableCsrfValidation = false;
+
+        return parent :: beforeAction($action);
+    }
+
 }

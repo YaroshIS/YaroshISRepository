@@ -20,8 +20,6 @@ export class CurrencyCounterComponent implements OnInit {
   ngOnInit() {
     this.currencyService.getCurrencyList()
         .then((data) => this.currencyList = data);
-    this.currencyService.postTestRequest()
-        .then((data) => console.log(data + "MSG"));
   }
 
   FindCurrencyByName(currencyName){

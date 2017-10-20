@@ -55,7 +55,8 @@ export class CurrencyFormComponent implements OnInit {
     let dateNow = new Date();
 
     if( (+dateTo - +dateFrom > 1000*60*60*24*30) ||
-        (+dateFrom > +dateTo) )
+        (+dateFrom > +dateTo) ||
+        (+dateTo > +dateNow))
     {
       this.error.formValid = false;
       this.error.msg = "Выберите корректный промежуток времени. Период времени можно выбирать не более 30 суток";
