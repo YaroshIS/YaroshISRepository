@@ -5,8 +5,130 @@ webpackJsonp([1,4],{
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CurrencyListComponent; });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+var CurrencyListComponent = (function () {
+    function CurrencyListComponent() {
+        this.getRates = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* EventEmitter */]();
+        this.getMoreRates = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["G" /* EventEmitter */]();
+        this.currencies = [];
+        this.dateFrom = "";
+        this.dateTo = "";
+        this.currentID = [];
+        this.COUNT_OF_ELEMENTS_ON_PAGE = 3;
+        this.DATE_PERIOD = 6;
+    }
+    CurrencyListComponent.prototype.ngOnInit = function () {
+    };
+    CurrencyListComponent.prototype.GetRatesOnPage = function (pageNumber) {
+        this.page = pageNumber;
+        this.currencies = [];
+        this.dateToCurrent = this.addDaysToDate(this.dateFrom, this.DATE_PERIOD);
+        if (+(new Date(this.dateToCurrent)) > +(new Date(this.dateTo)))
+            this.dateToCurrent = this.dateTo;
+        var maxSelectedCurr = (pageNumber) * this.COUNT_OF_ELEMENTS_ON_PAGE + this.COUNT_OF_ELEMENTS_ON_PAGE - 1 > this.selectedID.length - 1 ? this.selectedID.length - 1 : (pageNumber) * this.COUNT_OF_ELEMENTS_ON_PAGE + this.COUNT_OF_ELEMENTS_ON_PAGE - 1;
+        this.currentID = [];
+        for (var i = (pageNumber) * this.COUNT_OF_ELEMENTS_ON_PAGE; i <= maxSelectedCurr; i++) {
+            this.currentID.push(this.selectedID[i]);
+        }
+        var output = [this.currentID, this.dateFrom, this.dateToCurrent];
+        this.getRates.emit(output);
+    };
+    CurrencyListComponent.prototype.GetSelectedCurrencies = function (selectedID, dateFrom, dateTo) {
+        this.currencies = [];
+        this.selectedID = selectedID;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+        this.dateToCurrent = this.addDaysToDate(dateFrom, this.DATE_PERIOD);
+        this.pages = Array(Math.ceil(selectedID.length / this.COUNT_OF_ELEMENTS_ON_PAGE));
+        this.page = 0;
+        var maxCountOfCurrencies = selectedID.length < this.COUNT_OF_ELEMENTS_ON_PAGE ? selectedID.length : this.COUNT_OF_ELEMENTS_ON_PAGE;
+        this.currentID = [];
+        for (var i = 0; i < maxCountOfCurrencies; i++) {
+            this.currentID.push(selectedID[i]);
+        }
+        if (+(new Date(this.dateToCurrent)) > +(new Date(this.dateTo))) {
+            this.dateToCurrent = this.dateTo;
+        }
+        var output = [this.currentID, this.dateFrom, this.dateToCurrent];
+        this.getRates.emit(output);
+    };
+    CurrencyListComponent.prototype.GetRates = function (rates) {
+        if (this.currencies.length == 0)
+            this.currencies = rates;
+        else {
+            for (var i = 0; i < rates.length; i++) {
+                for (var j = 0; j < rates[0].length; j++) {
+                    this.currencies[i].push(rates[i][j]);
+                }
+            }
+        }
+        // this.currencies = rates;
+        // console.log(rates);
+        // for(let i = 0; i < rates.length; i++){
+        //     this.currencies[i] = [];
+        //     for(let j = rates[0].length-1; j > -1; j--){
+        //         this.currencies[i].push(rates[i][j]);
+        //     }
+        // }
+        // console.log(this.currencies);
+    };
+    CurrencyListComponent.prototype.GetMoreRates = function () {
+        var nextDay = this.addDaysToDate(this.dateToCurrent, 1);
+        var nextPeriod = this.addDaysToDate(this.dateToCurrent, this.DATE_PERIOD);
+        if (+(new Date(nextPeriod)) > +(new Date(this.dateTo))) {
+            nextPeriod = this.dateTo;
+        }
+        var output = [this.currentID, nextDay, nextPeriod];
+        this.dateToCurrent = nextPeriod;
+        this.getRates.emit(output);
+    };
+    CurrencyListComponent.prototype.addDaysToDate = function (data, days) {
+        data = data.split('-');
+        data = new Date(data[0], +data[1] - 1, +data[2] + days, 0, 0, 0, 0);
+        data = [data.getFullYear(), data.getMonth() + 1, data.getDate()];
+        data[2] = data[2] < 10 ? '0' + data[2] : data[2];
+        data = data.join('-').replace(/(^|\/)(\d)(?=\/)/g, "$10$2");
+        return data;
+    };
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* Output */])(), 
+        __metadata('design:type', Object)
+    ], CurrencyListComponent.prototype, "getRates", void 0);
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* Output */])(), 
+        __metadata('design:type', Object)
+    ], CurrencyListComponent.prototype, "getMoreRates", void 0);
+    CurrencyListComponent = __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["V" /* Component */])({
+            selector: 'app-currency-list',
+            template: __webpack_require__(631),
+            styles: [__webpack_require__(626)]
+        }), 
+        __metadata('design:paramtypes', [])
+    ], CurrencyListComponent);
+    return CurrencyListComponent;
+}());
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-list.component.js.map
+
+/***/ }),
+
+/***/ 304:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__(189);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__(631);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__ = __webpack_require__(633);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_map__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CurrencyService; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -26,20 +148,19 @@ var CurrencyService = (function () {
         this.http = http;
     }
     CurrencyService.prototype.getCurrencyList = function () {
-        console.log('hmhmm??');
         return this.http.get('http://angular.f.dev/index.php?r=site%2Fget-currencies')
             .toPromise()
             .then(function (response) { return response.json(); });
     };
-    CurrencyService.prototype.getCurrencyRateOnRange = function (curID, dateFromStr, dateToStr) {
-        var url = 'http://angular.f.dev/index.php?r=site%2Fget-currency-rate-on-range';
+    CurrencyService.prototype.getCurrenciesRateOnRange = function (cursID, dateFromStr, dateToStr) {
+        var url = 'http://angular.f.dev/index.php?r=site%2Fget-currencies-rate-on-range';
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* RequestOptions */]({ headers: headers, method: 'post' });
         var data = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* URLSearchParams */]();
         data.set('dateFrom', JSON.stringify(dateFromStr));
         data.set('dateTo', JSON.stringify(dateToStr));
-        data.set('curid', JSON.stringify(curID));
+        data.set('cursID', JSON.stringify(cursID));
         return this.http.post(url, data, options)
             .toPromise()
             .then(function (response) { return response.json(); });
@@ -58,7 +179,7 @@ var CurrencyService = (function () {
 
 /***/ }),
 
-/***/ 349:
+/***/ 350:
 /***/ (function(module, exports) {
 
 function webpackEmptyContext(req) {
@@ -67,20 +188,20 @@ function webpackEmptyContext(req) {
 webpackEmptyContext.keys = function() { return []; };
 webpackEmptyContext.resolve = webpackEmptyContext;
 module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 349;
+webpackEmptyContext.id = 350;
 
 
 /***/ }),
 
-/***/ 350:
+/***/ 351:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(438);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__ = __webpack_require__(439);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__environments_environment__ = __webpack_require__(464);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_app_module__ = __webpack_require__(459);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_app_module__ = __webpack_require__(460);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_http__ = __webpack_require__(189);
 
 
@@ -95,12 +216,12 @@ __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dyna
 
 /***/ }),
 
-/***/ 458:
+/***/ 459:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_toPromise__ = __webpack_require__(632);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_toPromise__ = __webpack_require__(634);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_toPromise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_rxjs_add_operator_toPromise__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -120,10 +241,10 @@ var AppComponent = (function () {
     }
     AppComponent.prototype.ngOnInit = function () { };
     AppComponent = __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Component */])({
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["V" /* Component */])({
             selector: 'app-root',
-            template: __webpack_require__(625),
-            styles: [__webpack_require__(620)],
+            template: __webpack_require__(627),
+            styles: [__webpack_require__(622)],
         }),
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["d" /* Injectable */])(), 
         __metadata('design:paramtypes', [])
@@ -134,20 +255,20 @@ var AppComponent = (function () {
 
 /***/ }),
 
-/***/ 459:
+/***/ 460:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__ = __webpack_require__(193);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(429);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__(430);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_http__ = __webpack_require__(189);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app_component__ = __webpack_require__(458);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__currency_list_currency_list_component__ = __webpack_require__(463);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__currency_form_currency_form_component__ = __webpack_require__(461);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__currency_service__ = __webpack_require__(303);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__currency_counter_currency_counter_component__ = __webpack_require__(460);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__currency_graphics_currency_graphics_component__ = __webpack_require__(462);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__app_component__ = __webpack_require__(459);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__currency_list_currency_list_component__ = __webpack_require__(303);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__currency_form_currency_form_component__ = __webpack_require__(462);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__currency_service__ = __webpack_require__(304);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__currency_counter_currency_counter_component__ = __webpack_require__(461);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__currency_graphics_currency_graphics_component__ = __webpack_require__(463);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -198,12 +319,13 @@ var AppModule = (function () {
 
 /***/ }),
 
-/***/ 460:
+/***/ 461:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__currency_service__ = __webpack_require__(303);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__currency_service__ = __webpack_require__(304);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__currency_list_currency_list_component__ = __webpack_require__(303);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CurrencyCounterComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -216,52 +338,57 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
 var CurrencyCounterComponent = (function () {
     function CurrencyCounterComponent(currencyService) {
         this.currencyService = currencyService;
-        this.currenciesRates = [];
     }
     CurrencyCounterComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.currencyService.getCurrencyList()
             .then(function (data) { return _this.currencyList = data; });
     };
-    CurrencyCounterComponent.prototype.FindCurrencyByName = function (currencyName) {
-        for (var _i = 0, _a = this.currencyList; _i < _a.length; _i++) {
-            var currency = _a[_i];
-            if (currencyName == currency.Cur_Name)
-                return currency;
+    CurrencyCounterComponent.prototype.TestAddSelectedCurrencies = function (selectedCurr_dateFrom_dateTo) {
+        var selectedCurrencies = selectedCurr_dateFrom_dateTo[0];
+        var dateFrom = selectedCurr_dateFrom_dateTo[1];
+        var dateTo = selectedCurr_dateFrom_dateTo[2];
+        var selectedID = [];
+        for (var _i = 0, selectedCurrencies_1 = selectedCurrencies; _i < selectedCurrencies_1.length; _i++) {
+            var selectedCurr = selectedCurrencies_1[_i];
+            selectedID.push(selectedCurr.Cur_ID);
         }
+        this.listOfCurrencies.GetSelectedCurrencies(selectedID, dateFrom, dateTo);
     };
-    CurrencyCounterComponent.prototype.AddSelectedCurrencies = function (selectedCurrencies) {
+    CurrencyCounterComponent.prototype.TestGetRates = function (ID_dateFrom_dateTo) {
         var _this = this;
-        var currenciesRates = selectedCurrencies[0];
-        var dateFrom = new Date(selectedCurrencies[1]);
-        var dateTo = new Date(selectedCurrencies[2]);
-        var monthFrom = dateFrom.getMonth() + 1;
-        var monthTo = dateTo.getMonth() + 1;
-        this.currenciesRates = [];
-        for (var _i = 0, currenciesRates_1 = currenciesRates; _i < currenciesRates_1.length; _i++) {
-            var currency = currenciesRates_1[_i];
-            this.currencyService.getCurrencyRateOnRange(currency.Cur_ID, dateFrom.getFullYear() + '-' + monthFrom + '-' + dateFrom.getDate(), dateTo.getFullYear() + '-' + monthTo + '-' + dateTo.getDate()).then(function (data) { _this.currenciesRates.push(data); });
-        }
+        var ID = ID_dateFrom_dateTo[0];
+        var dateFrom = ID_dateFrom_dateTo[1];
+        var dateTo = ID_dateFrom_dateTo[2];
+        this.currencyService.getCurrenciesRateOnRange(ID, dateFrom, dateTo)
+            .then(function (data) {
+            _this.listOfCurrencies.GetRates(data);
+        });
     };
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_2__currency_list_currency_list_component__["a" /* CurrencyListComponent */]), 
+        __metadata('design:type', (typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__currency_list_currency_list_component__["a" /* CurrencyListComponent */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_2__currency_list_currency_list_component__["a" /* CurrencyListComponent */]) === 'function' && _a) || Object)
+    ], CurrencyCounterComponent.prototype, "listOfCurrencies", void 0);
     CurrencyCounterComponent = __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Component */])({
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["V" /* Component */])({
             selector: 'app-currency-counter',
-            template: __webpack_require__(626),
-            styles: [__webpack_require__(621)]
+            template: __webpack_require__(628),
+            styles: [__webpack_require__(623)]
         }), 
-        __metadata('design:paramtypes', [(typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__currency_service__["a" /* CurrencyService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__currency_service__["a" /* CurrencyService */]) === 'function' && _a) || Object])
+        __metadata('design:paramtypes', [(typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__currency_service__["a" /* CurrencyService */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_1__currency_service__["a" /* CurrencyService */]) === 'function' && _b) || Object])
     ], CurrencyCounterComponent);
     return CurrencyCounterComponent;
-    var _a;
+    var _a, _b;
 }());
 //# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-counter.component.js.map
 
 /***/ }),
 
-/***/ 461:
+/***/ 462:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -291,18 +418,13 @@ var CurrencyFormComponent = (function () {
     CurrencyFormComponent.prototype.AddCurrency = function (currency) {
         if (this.selectedCurrencies.indexOf(currency) != -1)
             this.selectedCurrencies.splice(this.selectedCurrencies.indexOf(currency), 1);
-        else if (this.selectedCurrencies.length < 10)
+        else
             this.selectedCurrencies.push(currency);
     };
     CurrencyFormComponent.prototype.AddCurrencies = function () {
         if (this.selectedCurrencies.length == 0) {
             this.error.formValid = false;
             this.error.msg = "Выберите валюту(ы)";
-            return false;
-        }
-        else if (this.selectedCurrencies.length > 15) {
-            this.error.formValid = false;
-            this.error.msg = "Количество валют не должно превышать 15";
             return false;
         }
         else {
@@ -312,18 +434,6 @@ var CurrencyFormComponent = (function () {
         var dateFrom = new Date(this.currencyFirstDate);
         var dateTo = new Date(this.currencySecondDate);
         var dateNow = new Date();
-        if ((+dateTo - +dateFrom > 1000 * 60 * 60 * 24 * 30) ||
-            (+dateFrom > +dateTo) ||
-            (+dateTo > +dateNow)) {
-            this.error.formValid = false;
-            this.error.msg = "Выберите корректный промежуток времени. Период времени можно выбирать не более 30 суток";
-            return false;
-        }
-        else {
-            this.error.formValid = true;
-            this.error.msg = "";
-        }
-        console.log(dateFrom.getMonth());
         var output = [this.selectedCurrencies, this.currencyFirstDate, this.currencySecondDate];
         this.addList.emit(output);
     };
@@ -344,10 +454,10 @@ var CurrencyFormComponent = (function () {
         __metadata('design:type', Object)
     ], CurrencyFormComponent.prototype, "addList", void 0);
     CurrencyFormComponent = __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Component */])({
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["V" /* Component */])({
             selector: 'app-currency-form',
-            template: __webpack_require__(627),
-            styles: [__webpack_require__(622)],
+            template: __webpack_require__(629),
+            styles: [__webpack_require__(624)],
         }), 
         __metadata('design:paramtypes', [])
     ], CurrencyFormComponent);
@@ -357,11 +467,13 @@ var CurrencyFormComponent = (function () {
 
 /***/ }),
 
-/***/ 462:
+/***/ 463:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_highcharts_adapters_standalone_framework_src__ = __webpack_require__(619);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_highcharts_adapters_standalone_framework_src___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_highcharts_adapters_standalone_framework_src__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CurrencyGraphicsComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -373,65 +485,52 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+var Highcharts = __webpack_require__(620);
+
 var CurrencyGraphicsComponent = (function () {
     function CurrencyGraphicsComponent() {
+        this.me = this;
     }
-    CurrencyGraphicsComponent.prototype.ngOnInit = function () {
+    CurrencyGraphicsComponent.prototype.ngOnInit = function () { };
+    ;
+    CurrencyGraphicsComponent.prototype.ngAfterViewInit = function () {
+        var opts = {
+            series: [{
+                    name: 'Random data',
+                    data: [1, 2, 3, 4, 3, 2, 1]
+                }]
+        };
+        if (this.chartEl && this.chartEl.nativeElement) {
+            opts.chart = {
+                type: 'spline',
+                renderTo: this.chartEl.nativeElement
+            };
+            this._chart = new Highcharts.Chart(opts);
+        }
+    };
+    CurrencyGraphicsComponent.prototype.ngOnDestroy = function () {
+        this._chart.destroy();
+    };
+    CurrencyGraphicsComponent.prototype.addPoint = function () {
+        this.me._chart['series'][0].addPoint(4);
+        this.me._chart.addSeries({ name: 'Test Data', data: [4, 3, 2, 1, 2, 3, 4] });
     };
     __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Input */])(), 
-        __metadata('design:type', Object)
-    ], CurrencyGraphicsComponent.prototype, "currenciesRates", void 0);
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* ViewChild */])('chart'), 
+        __metadata('design:type', (typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* ElementRef */] !== 'undefined' && __WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* ElementRef */]) === 'function' && _a) || Object)
+    ], CurrencyGraphicsComponent.prototype, "chartEl", void 0);
     CurrencyGraphicsComponent = __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Component */])({
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["V" /* Component */])({
             selector: 'app-currency-graphics',
-            template: __webpack_require__(628),
-            styles: [__webpack_require__(623)]
+            template: __webpack_require__(630),
+            styles: [__webpack_require__(625)]
         }), 
         __metadata('design:paramtypes', [])
     ], CurrencyGraphicsComponent);
     return CurrencyGraphicsComponent;
+    var _a;
 }());
 //# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-graphics.component.js.map
-
-/***/ }),
-
-/***/ 463:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CurrencyListComponent; });
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-var CurrencyListComponent = (function () {
-    function CurrencyListComponent() {
-    }
-    CurrencyListComponent.prototype.ngOnInit = function () {
-    };
-    __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Input */])(), 
-        __metadata('design:type', Object)
-    ], CurrencyListComponent.prototype, "currenciesRates", void 0);
-    CurrencyListComponent = __decorate([
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Component */])({
-            selector: 'app-currency-list',
-            template: __webpack_require__(629),
-            styles: [__webpack_require__(624)]
-        }), 
-        __metadata('design:paramtypes', [])
-    ], CurrencyListComponent);
-    return CurrencyListComponent;
-}());
-//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-list.component.js.map
 
 /***/ }),
 
@@ -451,83 +550,83 @@ var environment = {
 
 /***/ }),
 
-/***/ 620:
+/***/ 622:
 /***/ (function(module, exports) {
 
 module.exports = ".col-xs-4, .col-xs-8, .col-xs-12{\r\n    height: 40em;\r\n}\r\n\r\n.table-hover th:hover{\r\n    cursor: pointer;\r\n}\r\n\r\n.table-body tr:hover{\r\n    cursor:default;\r\n}\r\n"
 
 /***/ }),
 
-/***/ 621:
-/***/ (function(module, exports) {
-
-module.exports = ""
-
-/***/ }),
-
-/***/ 622:
-/***/ (function(module, exports) {
-
-module.exports = "#btnCurrency{\r\n    word-break: break-all;\r\n}"
-
-/***/ }),
-
 /***/ 623:
 /***/ (function(module, exports) {
 
-module.exports = ".axis path, .axis line {\r\n    fill: none;\r\n    stroke: steelblue;\r\n}\r\n\r\n.axis text {\r\n    font: 10px Verdana;\r\n}"
+module.exports = ""
 
 /***/ }),
 
 /***/ 624:
 /***/ (function(module, exports) {
 
-module.exports = ".table th:hover{\r\n    cursor: pointer;\r\n}\r\ntable.head{\r\n    width:890px;\r\n    margin:10px 0 0;\r\n    border:1px solid #36140a;\r\n    border-bottom:none;\r\n    background:#f8eabb;\r\n}\r\ntable.head th.first{\r\n    width:200px;\r\n    border-right:1px solid\r\n}\r\ndiv.table{\r\n    width:890px;\r\n    border:none;\r\n}\r\ndiv.table .left{\r\n    width:200px;\r\n}\r\ndiv.table .left span{\r\n    display:block;\r\n}\r\ndiv.table .right{\r\n    width:690px;\r\n    overflow:auto;\r\n}\r\ndiv.table .right table.calendar{\r\n    margin:0;\r\n    background:#f8eabb;\r\n    width:960px;\r\n}\r\ntable.calendar td, table.calendar th{\r\n    border:1px solid #36140a;\r\n}\r\ntable.calendar td.subject{\r\n    width:200px;\r\n}\r\ntable.calendar td{\r\n    width:34px;\r\n    height:53px;\r\n}"
+module.exports = "#btnCurrency{\r\n    word-break: break-all;\r\n}"
 
 /***/ }),
 
 /***/ 625:
 /***/ (function(module, exports) {
 
-module.exports = "<hr>\n<div class=\"container\">\n    <app-currency-counter></app-currency-counter>\n</div>"
+module.exports = ":host {\r\n    width: 100%;\r\n    display:block;\r\n}\r\n:host .axis path,\r\n:host .axis line {\r\n    fill: none;\r\n    stroke: rgba(0, 0, 0, 0.2);\r\n    color: rgba(0, 0, 0, 0.2);\r\n    shape-rendering: crispEdges;\r\n}\r\n\r\n:host .axis text {\r\n    font-size: 11px;\r\n    fill: rgba(0, 0, 0, 0.9);\r\n}\r\n\r\n:host .grid .tick {\r\n    stroke: rgba(0, 0, 0, 0.1);\r\n    opacity: 0.3;\r\n}\r\n\r\n:host .grid path {\r\n    stroke-width: 0;\r\n}\r\n\r\n:host .grid .tick {\r\n    stroke: rgba(0, 0, 0, 0.1);\r\n    opacity: 0.3;\r\n}\r\n\r\n:host .grid path {\r\n    stroke-width: 0;\r\n}\r\n:host .color-label{\r\n    display: inline;\r\n}"
 
 /***/ }),
 
 /***/ 626:
 /***/ (function(module, exports) {
 
-module.exports = "<app-currency-graphics [currenciesRates]=\"currenciesRates\" class=\"col-xs-12\"></app-currency-graphics>\n<app-currency-form [currencyList]=\"currencyList\" (addList)=\"AddSelectedCurrencies($event)\"></app-currency-form>\n<app-currency-list [currenciesRates]=\"currenciesRates\"></app-currency-list>\n"
+module.exports = ""
 
 /***/ }),
 
 /***/ 627:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"form-inline\">\n\n        <div class=\"form-group\" *ngIf = currencyList>\n            <div class=\"form-control\">\n                <label>Валюта:</label>\n            </div>\n\n            <button  class=\"btn btn-primary\"\n                     (click)=\"ToggleShowList()\"\n                     type=\"button\"\n            >\n                Показать список валют\n            </button>\n\n        </div>\n\n        <div class=\"form-group\">\n            На дату с:<input class=\"form-control\" type=\"date\"\n                            [(ngModel)]=\"currencyFirstDate\"\n                            #dateFrom=\"ngModel\"\n                            required>\n            по: <input class=\"form-control\" type=\"date\"\n                       [(ngModel)]=\"currencySecondDate\"\n                       #dateTo=\"ngModel\"\n                       required>\n        </div>\n\n        <div class=\"form-group\">\n            <button class=\"btn btn-primary form-control\"\n                    [disabled]=\"dateFrom.invalid || dateTo.invalid\"\n                    (click)=\"AddCurrencies()\"\n            >\n                Получить\n            </button>\n            <button class=\"btn btn-danger\"\n                    (click)=\"ClearSelectedCurrencies()\">Сброс</button>\n        </div>\n\n</div>\n\n<div *ngIf=\"!error.formValid\"\n     class=\"alert alert-danger\"\n>\n    {{error.msg}}\n</div>\n\n<div *ngIf = \"showList\" class=\"listOfCurrencies\">\n    <div class=\"alert-info\">\n        Выбирать можно не более 10 валют\n    </div>\n    <div>\n        <div class=\"col-xs-2 btn btn-default\"\n                id=\"btnCurrency\"\n                *ngFor = \"let currency of currencyList\"\n                (click)=\"AddCurrency(currency)\"\n        >\n            <i class=\"glyphicon glyphicon-ok\"\n               *ngIf=\"selectedCurrencies.indexOf(currency) != -1\"\n               aria-hidden=\"true\"></i>\n            {{currency.Cur_Name}}\n        </div>\n    </div>\n</div>\n\n\n"
+module.exports = "<hr>\n<div class=\"container\">\n    <app-currency-counter></app-currency-counter>\n</div>"
 
 /***/ }),
 
 /***/ 628:
 /***/ (function(module, exports) {
 
-module.exports = ""
+module.exports = "<!--<app-currency-graphics class=\"col-xs-12\"></app-currency-graphics>-->\n<app-currency-form [currencyList]=\"currencyList\" (addList)=\"TestAddSelectedCurrencies($event)\"></app-currency-form>\n<app-currency-list (getRates)=\"TestGetRates($event)\" (getMoreRates)=\"GetMoreRates($event)\"></app-currency-list>\n"
 
 /***/ }),
 
 /***/ 629:
 /***/ (function(module, exports) {
 
-module.exports = "<table *ngIf=\"currenciesRates.length > 0\" class=\"table table-striped table-hover table-responsive\">\n  <thead>\n  <tr>\n    <th align=\"center\">\n      Дата:\n    </th>\n    <th *ngFor = \"let currencyOnRange of currenciesRates\"\n      align=\"center\">\n      {{currencyOnRange[0].Cur_Name}}\n    </th>\n  </tr>\n  </thead>\n  <tbody>\n    <tr *ngFor=\"let currencyDates of currenciesRates[0]; let i = index;\">\n      <td>\n        <strong>{{currenciesRates[0][currenciesRates[0].length - i - 1].Date.slice(5,10).replace('-','.')}}</strong>\n      </td>\n      <td *ngFor=\"let currencyNames of currenciesRates; let j = index\">\n        {{currenciesRates[j][currenciesRates[0].length - i - 1].Cur_OfficialRate}}\n      </td>\n    </tr>\n  </tbody>\n</table>"
+module.exports = "<div class=\"form-inline\">\n\n        <div class=\"form-group\" *ngIf = currencyList>\n            <div class=\"form-control\">\n                <label>Валюта:</label>\n            </div>\n\n            <button  class=\"btn btn-primary\"\n                     (click)=\"ToggleShowList()\"\n                     type=\"button\"\n            >\n                Выбрать валюты\n            </button>\n\n        </div>\n\n        <div class=\"form-group\">\n            На дату с:<input class=\"form-control\" type=\"date\"\n                            [(ngModel)]=\"currencyFirstDate\"\n                            #dateFrom=\"ngModel\"\n                            placeholder=\"yyyy-mm-dd\"\n                            required>\n            по: <input class=\"form-control\" type=\"date\"\n                       [(ngModel)]=\"currencySecondDate\"\n                       #dateTo=\"ngModel\"\n                       placeholder=\"yyyy-mm-dd\"\n                       required pattern=\"20[0-9]{2}[\\-\\.\\\\\\/][0-9]{2}[\\-\\.\\\\\\/][0-9]{2}\">\n        </div>\n\n        <div class=\"form-group\">\n            <button class=\"btn btn-primary form-control\"\n                    [disabled]=\"dateFrom.invalid || dateTo.invalid\"\n                    (click)=\"AddCurrencies()\"\n            >\n                Получить\n            </button>\n            <button class=\"btn btn-danger\"\n                    (click)=\"ClearSelectedCurrencies()\">Сброс</button>\n        </div>\n\n</div>\n\n<div *ngIf=\"!error.formValid\"\n     class=\"alert alert-danger\"\n>\n    {{error.msg}}\n</div>\n\n<div *ngIf = \"showList\" class=\"listOfCurrencies\">\n    <div>\n        <div class=\"col-xs-2 btn btn-default\"\n                id=\"btnCurrency\"\n                *ngFor = \"let currency of currencyList\"\n                (click)=\"AddCurrency(currency)\"\n        >\n            <i class=\"glyphicon glyphicon-ok\"\n               *ngIf=\"selectedCurrencies.indexOf(currency) != -1\"\n               aria-hidden=\"true\"></i>\n            {{currency.Cur_Name}}\n        </div>\n    </div>\n</div>\n\n\n"
 
 /***/ }),
 
-/***/ 647:
+/***/ 630:
+/***/ (function(module, exports) {
+
+module.exports = "<div>\r\n    <div #chart></div>\r\n</div>\r\n<button (click)=\"addPoint()\">Add Point</button>"
+
+/***/ }),
+
+/***/ 631:
+/***/ (function(module, exports) {
+
+module.exports = "<div *ngIf=\"currencies.length > 0\">\n  <table class=\"table table-striped table-hover table-responsive\">\n    <thead>\n    <tr>\n      <th align=\"center\"\n          class=\"col-xs-3\"\n      >\n        Дата:\n      </th>\n      <th *ngFor = \"let currencyOnRange of currencies\"\n          class=\"col-xs-3\"\n          align=\"center\">\n        {{currencyOnRange[0].Cur_Name}}\n      </th>\n    </tr>\n    </thead>\n    <tbody>\n      <tr *ngFor=\"let currencyDates of currencies[0]; let i = index;\">\n        <td>\n          <strong>{{currencies[0][i].Date.slice(5,10).replace('-','.')}}</strong>\n        </td>\n        <td *ngFor=\"let currencyNames of currencies; let j = index\">\n          {{currencies[j][i].Cur_OfficialRate}}\n        </td>\n      </tr>\n    </tbody>\n  </table>\n  <a *ngFor = \"let tpage of pages; let i = index\"\n     (click)=\"GetRatesOnPage(i)\"\n  >\n    page {{i}}\n  </a>\n  <br>\n  <a *ngIf=\"dateToCurrent != dateTo\" (click)=\"GetMoreRates()\">Show More Dates</a>\n\n</div>"
+
+/***/ }),
+
+/***/ 649:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(350);
+module.exports = __webpack_require__(351);
 
 
 /***/ })
 
-},[647]);
+},[649]);
 //# sourceMappingURL=main.bundle.map
