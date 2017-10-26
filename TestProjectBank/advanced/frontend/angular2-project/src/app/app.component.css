@@ -1,0 +1,11 @@
+.col-xs-4, .col-xs-8, .col-xs-12{
+    height: 40em;
+}
+
+.table-hover th:hover{
+    cursor: pointer;
+}
+
+.table-body tr:hover{
+    cursor:default;
+}

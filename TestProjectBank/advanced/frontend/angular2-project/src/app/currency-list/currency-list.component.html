@@ -1,0 +1,36 @@
+<div *ngIf="currencies.length > 0">
+  <table class="table table-striped table-hover table-responsive">
+    <thead>
+    <tr>
+      <th align="center"
+          class="col-xs-3"
+      >
+        Дата:
+      </th>
+      <th *ngFor = "let currencyOnRange of currencies"
+          class="col-xs-3"
+          align="center">
+        {{currencyOnRange[0].Cur_Name}}
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let currencyDates of currencies[0]; let i = index;">
+        <td>
+          <strong>{{currencies[0][i].Date.slice(5,10).replace('-','.')}}</strong>
+        </td>
+        <td *ngFor="let currencyNames of currencies; let j = index">
+          {{currencies[j][i].Cur_OfficialRate}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <a *ngFor = "let tpage of pages; let i = index"
+     (click)="GetRatesOnPage(i)"
+  >
+    page {{i}}
+  </a>
+  <br>
+  <a *ngIf="dateToCurrent != dateTo" (click)="GetMoreRates()">Show More Dates</a>
+
+</div>

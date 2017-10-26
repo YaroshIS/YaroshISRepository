@@ -1,0 +1,3 @@
+<!--<app-currency-graphics class="col-xs-12"></app-currency-graphics>-->
+<app-currency-form [currencyList]="currencyList" (addList)="TestAddSelectedCurrencies($event)"></app-currency-form>
+<app-currency-list (getRates)="TestGetRates($event)" (getMoreRates)="GetMoreRates($event)"></app-currency-list>
