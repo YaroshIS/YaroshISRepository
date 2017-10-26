@@ -2,5 +2,6 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$/advanced/frontend/my-app" libraries="{TestProjectBank/advanced/frontend/my-app/node_modules}" />
+    <file url="file://$PROJECT_DIR$/advanced/frontend/my-app/src" libraries="{TestProjectBank/advanced/frontend/my-app/src/node_modules}" />
   </component>
 </project>
