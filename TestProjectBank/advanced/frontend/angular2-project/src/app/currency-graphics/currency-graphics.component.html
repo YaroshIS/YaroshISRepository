@@ -1,4 +1,13 @@
 <div>
-    <div #chart></div>
+    <div>
+        <div #chart></div>
+    </div>
+    <a *ngIf="currentCurrency < currencies.length-1"
+       (click)="NextGraphics()">
+        Next Graphics
+    </a>
+    <a *ngIf="currentCurrency > 0"
+       (click)="PreviousGraphics()">
+        Previous Graphics
+    </a>
 </div>
-<button (click)="addPoint()">Add Point</button>

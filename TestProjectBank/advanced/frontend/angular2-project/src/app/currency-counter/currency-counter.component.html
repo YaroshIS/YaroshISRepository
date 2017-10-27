@@ -1,3 +1,16 @@
-<!--<app-currency-graphics class="col-xs-12"></app-currency-graphics>-->
-<app-currency-form [currencyList]="currencyList" (addList)="TestAddSelectedCurrencies($event)"></app-currency-form>
-<app-currency-list (getRates)="TestGetRates($event)" (getMoreRates)="GetMoreRates($event)"></app-currency-list>
+<app-currency-form [currencyList]="currencyList"
+                   (addList)="TestAddSelectedCurrencies($event)"
+                   class="col-xs-12"
+                   align="center">
+</app-currency-form>
+
+<div style="height : 400px;">
+    <app-currency-list (getRates)="TestGetRates($event)"
+                       (getMoreRates)="GetMoreRates($event)"
+                       class="col-xs-6">
+    </app-currency-list>
+
+    <app-currency-graphics (getRates)="GetRatesToGraphics($event)"
+                           class="col-xs-6">
+    </app-currency-graphics>
+</div>

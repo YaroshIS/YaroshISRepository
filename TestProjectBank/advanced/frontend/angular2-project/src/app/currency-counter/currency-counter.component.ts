@@ -3,6 +3,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {CurrencyService} from "../currency.service";
 
 import { CurrencyListComponent } from '../currency-list/currency-list.component';
+import {CurrencyGraphicsComponent} from "../currency-graphics/currency-graphics.component";
 
 @Component({
   selector: 'app-currency-counter',
@@ -10,8 +11,8 @@ import { CurrencyListComponent } from '../currency-list/currency-list.component'
   styleUrls: ['./currency-counter.component.css']
 })
 export class CurrencyCounterComponent implements OnInit {
-  @ViewChild(CurrencyListComponent) listOfCurrencies : CurrencyListComponent;
-
+  @ViewChild(CurrencyListComponent) listComponent : CurrencyListComponent;
+  @ViewChild(CurrencyGraphicsComponent) graphicsComponent : CurrencyGraphicsComponent;
   public currencyList;
 
   constructor(private currencyService : CurrencyService) {
@@ -33,18 +34,28 @@ export class CurrencyCounterComponent implements OnInit {
       selectedID.push(selectedCurr.Cur_ID);
     }
 
-    this.listOfCurrencies.GetSelectedCurrencies(selectedID,dateFrom,dateTo);
+    this.graphicsComponent.GetSelectedCurrencies(selectedID,dateFrom,dateTo);
+    this.listComponent.GetSelectedCurrencies(selectedID,dateFrom,dateTo);
   }
 
-  TestGetRates(ID_dateFrom_dateTo){
-    let ID = ID_dateFrom_dateTo[0];
-    let dateFrom = ID_dateFrom_dateTo[1];
-    let dateTo = ID_dateFrom_dateTo[2];
+  TestGetRates(ID_dateFrom_dateToCurrent_dateTo){
+    let ID = ID_dateFrom_dateToCurrent_dateTo[0];
+    let dateFrom = ID_dateFrom_dateToCurrent_dateTo[1];
+    let dateToCurrent = ID_dateFrom_dateToCurrent_dateTo[2];
+    let dateTo = ID_dateFrom_dateToCurrent_dateTo[3];
 
-    this.currencyService.getCurrenciesRateOnRange(ID,dateFrom,dateTo)
+    this.currencyService.getCurrenciesRateOnRange(ID,dateFrom,dateToCurrent)
         .then((data) => {
-          this.listOfCurrencies.GetRates(data);
+          this.listComponent.GetRates(data);
         });
+  }
+
+  GetRatesToGraphics(ID_dates){
+    let ID = ID_dates[0];
+    let dates = ID_dates[1];
+
+    this.currencyService.getCurrenciesRatesOnDates(ID,dates)
+        .then(response => this.graphicsComponent.GetRates(response));
   }
 
 }

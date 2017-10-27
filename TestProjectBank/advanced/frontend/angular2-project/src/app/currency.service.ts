@@ -32,8 +32,24 @@ export class CurrencyService {
             .then(response => response.json());
     }
 
+    getCurrenciesRatesOnDates(cursID, dates){
+        let url = 'http://angular.f.dev/index.php?r=site%2Fget-currencies-rate-on-dates';
+
+        let headers = new Headers();
+        headers.append('Content-type', 'application/x-www-form-urlencoded');
+
+        let options = new RequestOptions({ headers: headers, method: 'post'});
+
+        let data = new URLSearchParams();
+        data.set('cursID', JSON.stringify(cursID));
+        data.set('dates', JSON.stringify(dates));
+
+        return this.http.post(url,data,options)
+            .toPromise()
+            .then(response => response.json());
+    }
+
     ngOnInit() {
         this.getCurrencyList();
     }
-
 }

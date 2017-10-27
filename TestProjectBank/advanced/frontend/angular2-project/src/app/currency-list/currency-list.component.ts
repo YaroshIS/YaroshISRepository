@@ -78,7 +78,7 @@ export class CurrencyListComponent implements OnInit {
             this.dateToCurrent = this.dateTo;
         }
 
-        let output = [this.currentID,this.dateFrom,this.dateToCurrent];
+        let output = [this.currentID,this.dateFrom,this.dateToCurrent,this.dateTo];
 
         this.getRates.emit(output);
     }

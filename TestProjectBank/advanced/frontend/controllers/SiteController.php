@@ -264,13 +264,10 @@ class SiteController extends Controller
         $dateTo = json_decode($request->post('dateTo'));
         $cursID = json_decode($request->post('cursID'));
 
-        $this->log_msg($dateTo);
-
         $query = "[";
 
         for($i = 0; $i < count($cursID); $i++){
             $query.= '[';
-            $this->log_msg("I:".$cursID[$i]);
             $query .= $this->GetCurrencyRateOnRange($cursID[$i], $dateFrom, $dateTo);
             $query = rtrim($query,',');
             $query .= '],';
@@ -283,6 +280,52 @@ class SiteController extends Controller
         $response->send();
 
         exit;
+    }
+
+    public function actionGetCurrenciesRateOnDates(){
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+
+        $response->headers->add('Access-Control-Allow-Origin', "*");
+        $response->headers->add('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token, Authorization');
+        $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
+
+        $cursID = json_decode($request->post('cursID'));
+        $dates = json_decode($request->post('dates'));
+
+        $curl_handler = curl_init();
+        curl_setopt($curl_handler, CURLOPT_URL, 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
+        curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
+        curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
+
+        $query = "[";
+
+        foreach($cursID as $currencyID){
+            $query .= "[";
+            for($i = 0; $i < count($dates); $i++){
+                $date = new \DateTime($dates[$i]);
+                $url = 'http://www.nbrb.by/API/ExRates/Rates/'
+                    .$currencyID
+                    .'?onDate='
+                    .$date->format("Y")
+                    .'-'
+                    .$date->format("m")
+                    .'-'
+                    .$date->format("d");
+                curl_setopt($curl_handler, CURLOPT_URL, $url);
+                $this->log_msg($url);
+                $query .= curl_exec($curl_handler).',';
+            }
+            $query = rtrim($query,',');
+            $query .= '],';
+        }
+
+        $query = rtrim($query,',');
+        $query .= "]";
+
+        $response->content = $query;
+        $response->send();
     }
 
     private function GetCurrencyRateOnRange($curID,$dateFrom,$dateTo){
@@ -330,7 +373,7 @@ class SiteController extends Controller
 
     public function beforeAction($action)
     {
-        if($action->id == "get-currencies-rate-on-range")
+        if($action->id == "get-currencies-rate-on-range" || $action->id == "get-currencies-rate-on-dates")
             $this->enableCsrfValidation = false;
 
         return parent :: beforeAction($action);
