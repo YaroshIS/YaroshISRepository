@@ -260,19 +260,47 @@ class SiteController extends Controller
         $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
 
 
-        $dateFrom = json_decode($request->post('dateFrom'));
-        $dateTo = json_decode($request->post('dateTo'));
+        $dateFrom = new \DateTime(json_decode($request->post('dateFrom')));
+        $dateTo = new \DateTime(json_decode($request->post('dateTo')));
         $cursID = json_decode($request->post('cursID'));
 
-        $query = "[";
+//        $query = "[";
+//
+//        for($i = 0; $i < count($cursID); $i++){
+//            $query.= '[';
+//            $query .= $this->GetCurrencyRateOnRange($cursID[$i], $dateFrom, $dateTo);
+//            $query = rtrim($query,',');
+//            $query .= '],';
+//        }
+//        $query = rtrim($query,',');
+//        $query .= ']';
 
-        for($i = 0; $i < count($cursID); $i++){
-            $query.= '[';
-            $query .= $this->GetCurrencyRateOnRange($cursID[$i], $dateFrom, $dateTo);
-            $query = rtrim($query,',');
-            $query .= '],';
+        $curl_handler = curl_init();
+
+        curl_setopt($curl_handler, CURLOPT_URL, 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
+        curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
+        curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
+
+        $query = "[";
+        foreach($cursID as $curID){
+            $url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/'.$curID.'?startDate='
+                .$dateFrom->format("Y")
+                .'-'
+                .$dateFrom->format("m")
+                .'-'
+                .$dateFrom->format("d")
+                .'&endDate='
+                .$dateTo->format("Y")
+                .'-'
+                .$dateTo->format("m")
+                .'-'
+                .$dateTo->format("d");
+            curl_setopt($curl_handler, CURLOPT_URL, $url);
+            $query .= curl_exec($curl_handler);
+            $query .= ',';
         }
-        $query = rtrim($query,',');
+        $query = rtrim($query, ',');
         $query .= ']';
 
         $response->content = $query;
@@ -291,78 +319,63 @@ class SiteController extends Controller
         $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
 
         $cursID = json_decode($request->post('cursID'));
-        $dates = json_decode($request->post('dates'));
+        $dateFrom = new \DateTime(json_decode($request->post('dateFrom')));
+        $dateTo = new \DateTime(json_decode($request->post('dateTo')));
+        $diff = $dateTo->diff($dateFrom)->days;
+        $countOfDates = json_decode($request->post('countOfRates'));
+
+        $this->log_msg('diff '.$diff);
+        $this->log_msg('countOfDates: '.$countOfDates);
+
+        $requiredPositions = $diff > $countOfDates ? $this->GetRequiredCountOfElementsOnRange($diff, $countOfDates) : $this->GetRequiredCountOfElementsOnRange($diff+1,$diff+1);
 
         $curl_handler = curl_init();
-        curl_setopt($curl_handler, CURLOPT_URL, 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
         curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
         curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
 
         $query = "[";
+        foreach($cursID as $curID){
+            $url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/'.$curID.'?startDate='
+                .$dateFrom->format("Y")
+                .'-'
+                .$dateFrom->format("m")
+                .'-'
+                .$dateFrom->format("d")
+                .'&endDate='
+                .$dateTo->format("Y")
+                .'-'
+                .$dateTo->format("m")
+                .'-'
+                .$dateTo->format("d");
 
-        foreach($cursID as $currencyID){
-            $query .= "[";
-            for($i = 0; $i < count($dates); $i++){
-                $date = new \DateTime($dates[$i]);
-                $url = 'http://www.nbrb.by/API/ExRates/Rates/'
-                    .$currencyID
-                    .'?onDate='
-                    .$date->format("Y")
-                    .'-'
-                    .$date->format("m")
-                    .'-'
-                    .$date->format("d");
-                curl_setopt($curl_handler, CURLOPT_URL, $url);
-                $this->log_msg($url);
-                $query .= curl_exec($curl_handler).',';
+            curl_setopt($curl_handler, CURLOPT_URL, $url);
+            $currencyRates = curl_exec($curl_handler);
+            $currencyRates = json_decode($currencyRates);
+
+            $requiredRates = [];
+            for($i = 0; $i < count($requiredPositions); $i++) {
+                $requiredRates[] = $currencyRates[$requiredPositions[$i]];
             }
-            $query = rtrim($query,',');
-            $query .= '],';
+            $query .= json_encode($requiredRates).',';
         }
-
         $query = rtrim($query,',');
-        $query .= "]";
+        $query .= ']';
 
         $response->content = $query;
         $response->send();
     }
 
-    private function GetCurrencyRateOnRange($curID,$dateFrom,$dateTo){
-        $dateFrom = new \DateTime($dateFrom);
-        $dateTo = new \DateTime($dateTo);
-        $diff = $dateFrom->diff($dateTo)->days;
+    private function GetRequiredCountOfElementsOnRange($range,$countOfElements){
+        $outArr = [];
 
-        $curl_handler = curl_init();
-        curl_setopt($curl_handler, CURLOPT_URL, 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
-        curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
-        curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
+        $increment = ($range+1)/$countOfElements;
 
-        $query = "";
-
-        for($i = 0; $i <= $diff; $i++){
-            $url = 'http://www.nbrb.by/API/ExRates/Rates/'
-                .$curID
-                .'?onDate='
-                .$dateFrom->format("Y")
-                .'-'.
-                $dateFrom->format("m")
-                .'-'.
-                $dateFrom->format("d");
-
-            curl_setopt($curl_handler, CURLOPT_URL, $url);
-
-            $query .= curl_exec($curl_handler).',';
-
-            if($query == false){
-                return false;
-            }
-
-            $dateFrom->add(new \DateInterval('P1D'));
+        for($i = 0; $i < $range; $i += $increment){
+            $outArr[] = floor($i);
         }
 
-        return $query;
+        return $outArr;
     }
 
     private function log_msg($msg){

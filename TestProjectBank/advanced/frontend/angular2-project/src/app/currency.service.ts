@@ -32,7 +32,7 @@ export class CurrencyService {
             .then(response => response.json());
     }
 
-    getCurrenciesRatesOnDates(cursID, dates){
+    getCurrenciesRatesOnDates(cursID, dateFrom, dateTo, countOfRates){
         let url = 'http://angular.f.dev/index.php?r=site%2Fget-currencies-rate-on-dates';
 
         let headers = new Headers();
@@ -42,7 +42,9 @@ export class CurrencyService {
 
         let data = new URLSearchParams();
         data.set('cursID', JSON.stringify(cursID));
-        data.set('dates', JSON.stringify(dates));
+        data.set('dateFrom', JSON.stringify(dateFrom));
+        data.set('dateTo', JSON.stringify((dateTo)));
+        data.set('countOfRates', JSON.stringify(countOfRates));
 
         return this.http.post(url,data,options)
             .toPromise()

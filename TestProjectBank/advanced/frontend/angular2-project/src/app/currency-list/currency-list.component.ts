@@ -7,7 +7,6 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 })
 export class CurrencyListComponent implements OnInit {
     @Output() getRates = new EventEmitter();
-    @Output() getMoreRates = new EventEmitter();
 
     private currencies;
     private selectedID;
@@ -20,7 +19,7 @@ export class CurrencyListComponent implements OnInit {
     private pages;
     private page;
 
-    private COUNT_OF_ELEMENTS_ON_PAGE;
+    private COUNT_OF_COLUMNS;
     private DATE_PERIOD;
 
     constructor() {
@@ -28,10 +27,10 @@ export class CurrencyListComponent implements OnInit {
         this.dateFrom = "";
         this.dateTo = "";
         this.currentID = [];
-        this.COUNT_OF_ELEMENTS_ON_PAGE = 3;
+        this.COUNT_OF_COLUMNS = 3;
         this.DATE_PERIOD = 6;
     }
-    
+
     ngOnInit() {
     }
 
@@ -45,10 +44,10 @@ export class CurrencyListComponent implements OnInit {
         if( +(new Date(this.dateToCurrent)) > +(new Date(this.dateTo)))
             this.dateToCurrent = this.dateTo;
 
-        let maxSelectedCurr = (pageNumber)*this.COUNT_OF_ELEMENTS_ON_PAGE + this.COUNT_OF_ELEMENTS_ON_PAGE-1 > this.selectedID.length-1 ? this.selectedID.length-1 : (pageNumber)*this.COUNT_OF_ELEMENTS_ON_PAGE + this.COUNT_OF_ELEMENTS_ON_PAGE-1;
+        let maxSelectedCurr = (pageNumber)*this.COUNT_OF_COLUMNS + this.COUNT_OF_COLUMNS-1 > this.selectedID.length-1 ? this.selectedID.length-1 : (pageNumber)*this.COUNT_OF_COLUMNS + this.COUNT_OF_COLUMNS-1;
 
         this.currentID = [];
-        for(let i = (pageNumber)*this.COUNT_OF_ELEMENTS_ON_PAGE; i <= maxSelectedCurr; i++){
+        for(let i = (pageNumber)*this.COUNT_OF_COLUMNS; i <= maxSelectedCurr; i++){
             this.currentID.push(this.selectedID[i]);
         }
 
@@ -64,10 +63,10 @@ export class CurrencyListComponent implements OnInit {
         this.dateTo = dateTo;
         this.dateToCurrent = this.addDaysToDate(dateFrom,this.DATE_PERIOD);
 
-        this.pages = Array(Math.ceil(selectedID.length / this.COUNT_OF_ELEMENTS_ON_PAGE));
+        this.pages = Array(Math.ceil(selectedID.length / this.COUNT_OF_COLUMNS));
         this.page = 0;
 
-        let maxCountOfCurrencies = selectedID.length < this.COUNT_OF_ELEMENTS_ON_PAGE ? selectedID.length : this.COUNT_OF_ELEMENTS_ON_PAGE;
+        let maxCountOfCurrencies = selectedID.length < this.COUNT_OF_COLUMNS ? selectedID.length : this.COUNT_OF_COLUMNS;
 
         this.currentID = [];
         for(let i = 0; i < maxCountOfCurrencies; i++){
@@ -78,7 +77,7 @@ export class CurrencyListComponent implements OnInit {
             this.dateToCurrent = this.dateTo;
         }
 
-        let output = [this.currentID,this.dateFrom,this.dateToCurrent,this.dateTo];
+        let output = [this.currentID,this.dateFrom,this.dateToCurrent];
 
         this.getRates.emit(output);
     }
@@ -93,15 +92,6 @@ export class CurrencyListComponent implements OnInit {
                 }
             }
         }
-        // this.currencies = rates;
-        // console.log(rates);
-        // for(let i = 0; i < rates.length; i++){
-        //     this.currencies[i] = [];
-        //     for(let j = rates[0].length-1; j > -1; j--){
-        //         this.currencies[i].push(rates[i][j]);
-        //     }
-        // }
-        // console.log(this.currencies);
     }
 
     GetMoreRates(){
@@ -112,7 +102,7 @@ export class CurrencyListComponent implements OnInit {
             nextPeriod = this.dateTo;
         }
 
-        let output = [this.currentID, nextDay, nextPeriod];
+        let output = [this.currentID, nextDay, nextPeriod, this.dateTo];
 
         this.dateToCurrent = nextPeriod;
 

@@ -22,7 +22,7 @@ export class CurrencyFormComponent implements OnInit {
     this.showList = false;
   }
 
-  ngOnInit(){  }
+  ngOnInit() { }
 
   ToggleShowList(){
     this.showList = !this.showList;
@@ -36,7 +36,7 @@ export class CurrencyFormComponent implements OnInit {
   }
 
 
-  AddCurrencies(){
+  SendCurrencies(){
     if(this.selectedCurrencies.length == 0){
       this.error.formValid = false;
       this.error.msg = "Выберите валюту(ы)";
@@ -49,6 +49,14 @@ export class CurrencyFormComponent implements OnInit {
     let dateFrom = new Date(this.currencyFirstDate);
     let dateTo = new Date(this.currencySecondDate);
     let dateNow = new Date();
+
+    if( +dateFrom > +dateTo ||
+        +dateFrom > +dateNow ||
+        +dateTo > +dateNow){
+      this.error.formValid = false;
+      this.error.msg = "Выберите корректный промежуток времени";
+      return false;
+    }
 
     let output = [this.selectedCurrencies, this.currencyFirstDate, this.currencySecondDate];
     this.addList.emit(output);
