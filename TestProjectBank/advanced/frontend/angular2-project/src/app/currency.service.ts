@@ -8,13 +8,15 @@ export class CurrencyService {
     constructor(private http: Http) {
     }
 
+    // GET Запрос на получение всех доступных для выбора валют
     getCurrencyList() {
         return this.http.get('http://angular.f.dev/index.php?r=site%2Fget-currencies')
             .toPromise()
             .then(response => response.json());
     }
 
-    getCurrenciesRateOnRange(cursID, dateFromStr : string, dateToStr: string){
+    // POST запрос на получение курсов валют на период с dateFrom по dateTo по переданным ID валют cursID
+    getCurrenciesRateOnRange(cursID, dateFrom : string, dateTo: string){
         let url = 'http://angular.f.dev/index.php?r=site%2Fget-currencies-rate-on-range';
 
         let headers = new Headers();
@@ -23,8 +25,8 @@ export class CurrencyService {
         let options = new RequestOptions({ headers: headers, method: 'post'});
 
         let data = new URLSearchParams();
-        data.set('dateFrom', JSON.stringify(dateFromStr));
-        data.set('dateTo', JSON.stringify(dateToStr));
+        data.set('dateFrom', JSON.stringify(dateFrom));
+        data.set('dateTo', JSON.stringify(dateTo));
         data.set('cursID', JSON.stringify(cursID));
 
         return this.http.post(url,data,options)
@@ -32,7 +34,8 @@ export class CurrencyService {
             .then(response => response.json());
     }
 
-    getCurrenciesRatesOnDates(cursID, dateFrom, dateTo, countOfRates){
+    // POST запрос на получение определенного количества (countOfRates) курсов валют с IDшниками cursId на период с dateFrom по dateTo
+    getCurrenciesRatesOnDates(cursID, dateFrom : string, dateTo : string, countOfRates){
         let url = 'http://angular.f.dev/index.php?r=site%2Fget-currencies-rate-on-dates';
 
         let headers = new Headers();
@@ -49,9 +52,5 @@ export class CurrencyService {
         return this.http.post(url,data,options)
             .toPromise()
             .then(response => response.json());
-    }
-
-    ngOnInit() {
-        this.getCurrencyList();
     }
 }

@@ -218,6 +218,7 @@ class SiteController extends Controller
         ]);
     }
 
+    // GET зарпос на получение списка доступных валют
     public function actionGetCurrencies()
     {
         $request = Yii::$app->request;
@@ -250,6 +251,8 @@ class SiteController extends Controller
         return $response->send();
     }
 
+    // POST запрос на получение курсов запрошенных валют на запрошенный период времени.
+    // Для этого метода отключен CSRF токен
     public function actionGetCurrenciesRateOnRange(){
 
         $request = Yii::$app->request;
@@ -310,6 +313,8 @@ class SiteController extends Controller
         exit;
     }
 
+    // POST запрос на получение курсов запрошенных валют на определенный период времени с возвратом только запрошенного количества значений.
+    // Для этого метода отключен CSRF токен.
     public function actionGetCurrenciesRateOnDates(){
         $request = Yii::$app->request;
         $response = Yii::$app->response;
@@ -324,10 +329,7 @@ class SiteController extends Controller
         $diff = $dateTo->diff($dateFrom)->days;
         $countOfDates = json_decode($request->post('countOfRates'));
 
-        $this->log_msg('diff '.$diff);
-        $this->log_msg('countOfDates: '.$countOfDates);
-
-        $requiredPositions = $diff > $countOfDates ? $this->GetRequiredCountOfElementsOnRange($diff, $countOfDates) : $this->GetRequiredCountOfElementsOnRange($diff+1,$diff+1);
+        $requiredPositions = $diff >= $countOfDates ? $this->GetRequiredCountOfElementsOnRange($diff, $countOfDates) : range(0,$diff);
 
         $curl_handler = curl_init();
         curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
@@ -366,14 +368,17 @@ class SiteController extends Controller
         $response->send();
     }
 
+    // Метод, выбирающий определенное количество (countOfElements) позиции в массиве длиной от 0 до range.
     private function GetRequiredCountOfElementsOnRange($range,$countOfElements){
         $outArr = [];
 
-        $increment = ($range+1)/$countOfElements;
+        $increment = $range/($countOfElements-1);
 
         for($i = 0; $i < $range; $i += $increment){
-            $outArr[] = floor($i);
+            $outArr[] = round($i);
         }
+        if(count($outArr) !== $countOfElements)
+            $outArr[] = $range;
 
         return $outArr;
     }
