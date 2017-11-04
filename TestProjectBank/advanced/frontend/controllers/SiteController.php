@@ -4,6 +4,8 @@ namespace frontend\controllers;
 use Faker\Provider\cs_CZ\DateTime;
 use Yii;
 use yii\base\InvalidParamException;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -13,6 +15,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use yii\web\Response;
 
 /**
  * Site controller
@@ -26,12 +29,12 @@ class SiteController extends Controller
     {
         return [
             'corsFilter' => [
-            'class' => \yii\filters\Cors::className(),
-            'cors' => [
-                'Access-Control-Allow-Origin' => ['*'],
-            ]
-        ],
-        'access' => [
+                'class' => \yii\filters\Cors::className(),
+                'cors' => [
+                    'Access-Control-Allow-Origin' => ['*'],
+                ]
+            ]/*,
+            'access' => [
                 'class' => AccessControl::className(),
                 'only' => ['logout', 'signup'],
                 'rules' => [
@@ -52,7 +55,7 @@ class SiteController extends Controller
                 'actions' => [
                     'logout' => ['post'],
                 ],
-            ],
+            ],*/
         ];
     }
 
@@ -71,6 +74,7 @@ class SiteController extends Controller
             ],
         ];
     }
+
 
     /**
      * Displays homepage.
@@ -224,36 +228,38 @@ class SiteController extends Controller
         $request = Yii::$app->request;
         $response = Yii::$app->response;
 
-        $response->headers->add('Access-Control-Allow-Origin', 'http://localhost:4200');
+        $response->headers->add('Access-Control-Allow-Origin', '*');
 
-        if(!$request->isGet){
+        if (!$request->isGet) {
             $response->statusCode = 400;
             $response->send();
-            exit;
+            return null;
         }
 
         $curl_handler = curl_init();
         curl_setopt($curl_handler, CURLOPT_URL, 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
-        curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
         curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
 
         $query = curl_exec($curl_handler);
 
-        if($query == false){
-            $response->statusCode = 500;
-        }else{
-            $response->content = $query;
+        $_response = [];
+        if (curl_getinfo($curl_handler)['http_code'] !== 200) {
+            $response->statusCode = curl_getinfo($curl_handler)['http_code'];
+        } else {
+            $_response = Json::decode($query);
         }
 
         curl_close($curl_handler);
 
-        return $response->send();
+        $response->format = Response::FORMAT_JSON;
+
+        return $_response;
     }
 
     // POST запрос на получение курсов запрошенных валют на запрошенный период времени.
     // Для этого метода отключен CSRF токен
-    public function actionGetCurrenciesRateOnRange(){
+    public function actionGetCurrenciesRateOnRange()
+    {
 
         $request = Yii::$app->request;
         $response = Yii::$app->response;
@@ -263,20 +269,9 @@ class SiteController extends Controller
         $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
 
 
-        $dateFrom = new \DateTime(json_decode($request->post('dateFrom')));
-        $dateTo = new \DateTime(json_decode($request->post('dateTo')));
-        $cursID = json_decode($request->post('cursID'));
-
-//        $query = "[";
-//
-//        for($i = 0; $i < count($cursID); $i++){
-//            $query.= '[';
-//            $query .= $this->GetCurrencyRateOnRange($cursID[$i], $dateFrom, $dateTo);
-//            $query = rtrim($query,',');
-//            $query .= '],';
-//        }
-//        $query = rtrim($query,',');
-//        $query .= ']';
+        $dateFrom = new \DateTime(Json::decode($request->post('dateFrom')));
+        $dateTo = new \DateTime(Json::decode($request->post('dateTo')));
+        $cursID = Json::decode($request->post('cursID'));
 
         $curl_handler = curl_init();
 
@@ -285,37 +280,35 @@ class SiteController extends Controller
         curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
 
-        $query = "[";
+        $_response = [];
         foreach($cursID as $curID){
-            $url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/'.$curID.'?startDate='
-                .$dateFrom->format("Y")
-                .'-'
-                .$dateFrom->format("m")
-                .'-'
-                .$dateFrom->format("d")
-                .'&endDate='
-                .$dateTo->format("Y")
-                .'-'
-                .$dateTo->format("m")
-                .'-'
-                .$dateTo->format("d");
+            $url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/' . $curID . '?startDate='
+                . $dateFrom->format("Y")
+                . '-'
+                . $dateFrom->format("m")
+                . '-'
+                . $dateFrom->format("d")
+                . '&endDate='
+                . $dateTo->format("Y")
+                . '-'
+                . $dateTo->format("m")
+                . '-'
+                . $dateTo->format("d");
             curl_setopt($curl_handler, CURLOPT_URL, $url);
-            $query .= curl_exec($curl_handler);
-            $query .= ',';
+            $_response[] = Json::decode(curl_exec($curl_handler));
         }
-        $query = rtrim($query, ',');
-        $query .= ']';
 
-        $response->content = $query;
+        curl_close($curl_handler);
 
-        $response->send();
+        $response->format = Response::FORMAT_JSON;
 
-        exit;
+        return $_response;
     }
 
     // POST запрос на получение курсов запрошенных валют на определенный период времени с возвратом только запрошенного количества значений.
     // Для этого метода отключен CSRF токен.
-    public function actionGetCurrenciesRateOnDates(){
+    public function actionGetCurrenciesRateOnDates()
+    {
         $request = Yii::$app->request;
         $response = Yii::$app->response;
 
@@ -323,78 +316,53 @@ class SiteController extends Controller
         $response->headers->add('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token, Authorization');
         $response->headers->add('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
 
-        $cursID = json_decode($request->post('cursID'));
-        $dateFrom = new \DateTime(json_decode($request->post('dateFrom')));
-        $dateTo = new \DateTime(json_decode($request->post('dateTo')));
-        $diff = $dateTo->diff($dateFrom)->days;
-        $countOfDates = json_decode($request->post('countOfRates'));
-
-        $requiredPositions = $diff >= $countOfDates ? $this->GetRequiredCountOfElementsOnRange($diff, $countOfDates) : range(0,$diff);
+        $cursID = Json::decode($request->post('cursID'));
+        $dateFrom = new \DateTime(Json::decode($request->post('dateFrom')));
+        $dateTo = new \DateTime(Json::decode($request->post('dateTo')));
 
         $curl_handler = curl_init();
-        curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
         curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
 
-        $query = "[";
-        foreach($cursID as $curID){
-            $url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/'.$curID.'?startDate='
-                .$dateFrom->format("Y")
-                .'-'
-                .$dateFrom->format("m")
-                .'-'
-                .$dateFrom->format("d")
-                .'&endDate='
-                .$dateTo->format("Y")
-                .'-'
-                .$dateTo->format("m")
-                .'-'
-                .$dateTo->format("d");
+        $_response = [];
+        foreach ($cursID as $curID) {
+            $url = 'http://www.nbrb.by/API/ExRates/Rates/Dynamics/' . $curID . '?startDate='
+                . $dateFrom->format("Y")
+                . '-'
+                . $dateFrom->format("m")
+                . '-'
+                . $dateFrom->format("d")
+                . '&endDate='
+                . $dateTo->format("Y")
+                . '-'
+                . $dateTo->format("m")
+                . '-'
+                . $dateTo->format("d");
 
             curl_setopt($curl_handler, CURLOPT_URL, $url);
             $currencyRates = curl_exec($curl_handler);
-            $currencyRates = json_decode($currencyRates);
-
-            $requiredRates = [];
-            for($i = 0; $i < count($requiredPositions); $i++) {
-                $requiredRates[] = $currencyRates[$requiredPositions[$i]];
-            }
-            $query .= json_encode($requiredRates).',';
+            $_response[] = Json::decode($currencyRates);
         }
-        $query = rtrim($query,',');
-        $query .= ']';
 
-        $response->content = $query;
-        $response->send();
+        curl_close($curl_handler);
+
+        $response->format = Response::FORMAT_JSON;
+
+        return $_response;
     }
 
-    // Метод, выбирающий определенное количество (countOfElements) позиции в массиве длиной от 0 до range.
-    private function GetRequiredCountOfElementsOnRange($range,$countOfElements){
-        $outArr = [];
-
-        $increment = $range/($countOfElements-1);
-
-        for($i = 0; $i < $range; $i += $increment){
-            $outArr[] = round($i);
-        }
-        if(count($outArr) !== $countOfElements)
-            $outArr[] = $range;
-
-        return $outArr;
-    }
-
-    private function log_msg($msg){
+    private function log_msg($msg)
+    {
         $logFile = fopen('log.txt', 'a+');
-        fwrite($logFile, $msg."\n");
+        fwrite($logFile, $msg . "\n");
         fclose($logFile);
     }
 
     public function beforeAction($action)
     {
-        if($action->id == "get-currencies-rate-on-range" || $action->id == "get-currencies-rate-on-dates")
+        if ($action->id == "get-currencies-rate-on-range" || $action->id == "get-currencies-rate-on-dates")
             $this->enableCsrfValidation = false;
 
-        return parent :: beforeAction($action);
+        return parent:: beforeAction($action);
     }
 
 }
