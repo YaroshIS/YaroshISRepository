@@ -1,3 +1,12 @@
 <div>
+    <div *ngIf="pages">
+        <a *ngFor="let tpage of pages; let i = index"
+           (click)="GetRatesOnPage(i)">
+            <i class="glyphicon glyphicon-hand-right"
+               *ngIf="page == i"
+               aria-hidden="true"></i>
+            <span>page {{i+1}}</span>
+        </a>
+    </div>
     <div #chart></div>
 </div>

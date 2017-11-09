@@ -1,6 +1,7 @@
 :host {
-    display:block;
+    display: block;
 }
+
 :host .axis path,
 :host .axis line {
     fill: none;
@@ -31,6 +32,7 @@
 :host .grid path {
     stroke-width: 0;
 }
-:host .color-label{
+
+:host .color-label {
     display: inline;
 }

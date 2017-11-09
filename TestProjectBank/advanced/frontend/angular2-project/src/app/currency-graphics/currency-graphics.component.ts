@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 
+import { CurrencyService } from '../currency.service'
+
 const Highcharts = require('highcharts/highcharts.src');
 import 'highcharts/adapters/standalone-framework.src';
 
@@ -9,32 +11,33 @@ import 'highcharts/adapters/standalone-framework.src';
     styleUrls: ['./currency-graphics.component.css']
 })
 
-export class CurrencyGraphicsComponent implements OnInit {
-    ngOnInit(){};
-
-    @ViewChild('chart') public chartEl: ElementRef; // Переменная, необходимая для работы с элементом графика
-    @Output() getRates = new EventEmitter(); // Переменная, позволяющая вызывать методы родительского управляющего компонента. В управляющем компоненте вызывает метод GetRatesToGraphics(...)
-
-    private cursID; // Массив ID отображаемых в данный момент валют
-    private dateFrom; // Начальная дата
-    private dateTo; // Конечная дата
+export class CurrencyGraphicsComponent {
+    @ViewChild('chart') public chartEl:ElementRef; // Переменная, необходимая для работы с элементом графика
 
     private opts; // Настройки для графика
 
-    private COUNT_OF_RATES; // Максимальное количество значений на графике(передаётся php-серверу, который обрабатывает получение нужного количества значений)
+    private pages; // Переменная, отвечающая за количество страниц в графике
 
-    private _chart: any; // Переменная для работы с графиком
+    private _chart:any; // Переменная для работы с графиком
 
-    constructor(){
-        this.COUNT_OF_RATES = 15; // Максимальное количество значений на графике
-
+    constructor(private currencyService:CurrencyService) {
         this.opts = { // Задаём начальные настройик графика
             series: [],
-            xAxis : {
+            xAxis: {
                 type: 'datetime',
                 ordinal: true
-            }
-        }
+            },
+        };
+
+        // Подписка на изменение количества страниц
+        this.currencyService.updatePages.subscribe(data => {
+            this.pages = Array(data);
+        });
+
+        // Подписка на изменение курсов текущих валют
+        this.currencyService.updateRates.subscribe(data => {
+            this.GetRates(data);
+        })
     }
 
     // Срабатывает после полной загрузки и отображения компонента
@@ -42,7 +45,8 @@ export class CurrencyGraphicsComponent implements OnInit {
         if (this.chartEl && this.chartEl.nativeElement) {
             this.opts.chart = {
                 type: 'spline',
-                renderTo: this.chartEl.nativeElement
+                renderTo: this.chartEl.nativeElement,
+                zoomType: 'x'
             };
         }
     }
@@ -52,47 +56,28 @@ export class CurrencyGraphicsComponent implements OnInit {
         this._chart.destroy();
     }
 
-    // Отправляет запрос в управляющий компонент currency-counter и вызывает в нём метод GetRatesToGraphics.
-    // Данные в запросе: 1. ID нужных валют; 2. Начальную дату; 3. Конечную дату; 4. Количество максимальных значений в графике
-    public SendRequest(){
-        let output = [this.cursID, this.dateFrom, this.dateTo, this.COUNT_OF_RATES];
-
-        this.getRates.emit(output);
-    }
-
-    // Вызывается в управляющем компоненте currency-counter
-    // Метод, принимающий начальную и конечную даты. На этот период будет отправляться запрос к управляющему компоненту currency-counter
-    public GetDates(dateFrom,dateTo){
-        this.dateFrom = dateFrom;
-        this.dateTo = dateTo;
-    }
-
-    // Вызывается в управляющем компоненте currency-counter
-    // Метод, принимающий ID валют, которые необходимо отобразить на графике.
-    public GetSelectedID(cursID){
-        if (this.cursID != cursID) {
-            this.cursID = cursID;
-            return true;
-        }
-        return false;
-    }
-
-    // Вызывается в управляющем компоненте currency-counter
-    // Метод, принимающий курсы запрошенных валют на запрошенный период времени
-    public GetRates(rates){
+    // Метод, принимающий курсы запрошенных валют.
+    // Выводит значения на экран в виде графика
+    public GetRates(rates) {
         this._chart = new Highcharts.Chart(this.opts);
 
-        for(let curRates of rates){
+        for (let curRates of rates) {
             let data = [];
 
-            for(let RateOnDate of curRates){
-                data.push([+new Date(RateOnDate.Date)+1000*3600*24, RateOnDate.Cur_OfficialRate]);
+            for (let RateOnDate of curRates) {
+                data.push([+new Date(RateOnDate.Date) + 1000 * 3600 * 24, RateOnDate.Cur_OfficialRate]);
             }
 
             this._chart.addSeries({
                 data: data,
-                name: curRates[0].Cur_Name
+                name: curRates[0].Cur_Name,
+
             });
         }
+    }
+
+    // Метод, срабатывающий при смене страницы
+    GetRatesOnPage(pageNumber:number) {
+        this.currencyService.GetRatesOnPage(pageNumber);
     }
 }

@@ -104,7 +104,7 @@ var CurrencyGraphicsComponent = (function () {
     return CurrencyGraphicsComponent;
     var _a;
 }());
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/currency-graphics.component.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-graphics.component.js.map
 
 /***/ }),
 
@@ -231,7 +231,7 @@ var CurrencyListComponent = (function () {
     ], CurrencyListComponent);
     return CurrencyListComponent;
 }());
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/currency-list.component.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-list.component.js.map
 
 /***/ }),
 
@@ -302,7 +302,7 @@ var CurrencyService = (function () {
     return CurrencyService;
     var _a;
 }());
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/currency.service.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency.service.js.map
 
 /***/ }),
 
@@ -339,7 +339,7 @@ if (__WEBPACK_IMPORTED_MODULE_2__environments_environment__["a" /* environment *
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["a" /* enableProdMode */])();
 }
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_3__app_app_module__["a" /* AppModule */], [__WEBPACK_IMPORTED_MODULE_4__angular_http__["a" /* HttpModule */]]);
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/main.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/main.js.map
 
 /***/ }),
 
@@ -378,7 +378,7 @@ var AppComponent = (function () {
     ], AppComponent);
     return AppComponent;
 }());
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/app.component.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/app.component.js.map
 
 /***/ }),
 
@@ -442,7 +442,7 @@ var AppModule = (function () {
     ], AppModule);
     return AppModule;
 }());
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/app.module.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/app.module.js.map
 
 /***/ }),
 
@@ -564,7 +564,7 @@ var CurrencyCounterComponent = (function () {
     return CurrencyCounterComponent;
     var _a, _b, _c;
 }());
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/currency-counter.component.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-counter.component.js.map
 
 /***/ }),
 
@@ -669,7 +669,7 @@ var CurrencyFormComponent = (function () {
     ], CurrencyFormComponent);
     return CurrencyFormComponent;
 }());
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/currency-form.component.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/currency-form.component.js.map
 
 /***/ }),
 
@@ -685,7 +685,7 @@ var CurrencyFormComponent = (function () {
 var environment = {
     production: false
 };
-//# sourceMappingURL=D:/Projects/GIT/YaroshISRepository/TestProjectBank/advanced/frontend/my-app/src/environment.js.map
+//# sourceMappingURL=C:/OSPanel/domains/TestProjectBank/advanced/frontend/my-app/src/environment.js.map
 
 /***/ }),
 
@@ -706,7 +706,7 @@ module.exports = ""
 /***/ 624:
 /***/ (function(module, exports) {
 
-module.exports = "#my-drop-down-menu ul, ul#my-drop-down-menu{\r\n    list-style:none;\r\n}\r\n\r\n#my-drop-down-menu{\r\n    position:relative; /* (!) */\r\n    z-index:3;\r\n    width:200px;\r\n    height:20px;\r\n}\r\n\r\n#my-drop-down-menu li:hover{\r\n    background: #97e9eb;\r\n    border: 4px double black\r\n}\r\n\r\n#my-drop-down-menu li{\r\n    background: aliceblue;\r\n}\r\n\r\n#myBtn{\r\n    width: 200px;\r\n}\r\n\r\nli.link{\r\n    list-style: none;\r\n    width: 200px;\r\n}"
+module.exports = "#my-drop-down-menu ul, ul#my-drop-down-menu{\r\n    list-style:none;\r\n}\r\n\r\n#my-drop-down-menu{\r\n    position:relative; /* (!) */\r\n    z-index:3;\r\n    width:200px;\r\n    height:20px;\r\n}\r\n\r\n#my-drop-down-menu li:hover{\r\n    background: #97e9eb;\r\n    border: 4px double black;\r\n    border-radius: 3px;\r\n}\r\n\r\n#my-drop-down-menu li{\r\n    background: aliceblue;\r\n}\r\n\r\n#myBtn{\r\n    width: 200px;\r\n}\r\n\r\nli.link{\r\n    list-style: none;\r\n    width: 200px;\r\n}"
 
 /***/ }),
 

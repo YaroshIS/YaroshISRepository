@@ -1,3 +1,29 @@
-#btnCurrency{
-    word-break: break-all;
+#my-drop-down-menu ul, ul#my-drop-down-menu {
+    list-style: none;
+}
+
+#my-drop-down-menu {
+    position: relative; /* (!) */
+    z-index: 3;
+    width: 200px;
+    height: 20px;
+}
+
+#my-drop-down-menu li:hover {
+    background: #97e9eb;
+    border: 4px double black;
+    border-radius: 3px;
+}
+
+#my-drop-down-menu li {
+    background: aliceblue;
+}
+
+#myBtn {
+    width: 200px;
+}
+
+li.link {
+    list-style: none;
+    width: 200px;
 }

@@ -7,27 +7,26 @@ import { AppComponent } from './app.component';
 import { CurrencyListComponent } from './currency-list/currency-list.component';
 import { CurrencyFormComponent } from './currency-form/currency-form.component';
 import { CurrencyService }       from './currency.service';
-import { CurrencyCounterComponent } from './currency-counter/currency-counter.component';
 import { CurrencyGraphicsComponent } from './currency-graphics/currency-graphics.component';
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    CurrencyListComponent,
-    CurrencyFormComponent,
-    CurrencyCounterComponent,
-    CurrencyGraphicsComponent,
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule,
-  ],
-  providers: [
-      CurrencyService
+    declarations: [
+        AppComponent,
+        CurrencyListComponent,
+        CurrencyFormComponent,
+        CurrencyGraphicsComponent,
     ],
-  bootstrap: [ AppComponent ]
+    imports: [
+        BrowserModule,
+        FormsModule,
+        HttpModule,
+    ],
+    providers: [
+        CurrencyService
+    ],
+    bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
 

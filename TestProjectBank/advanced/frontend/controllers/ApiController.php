@@ -26,7 +26,7 @@ class ApiController extends Controller
         if (!$request->isGet) {
             $response->statusCode = 400;
             $response->send();
-            return null;
+            return false;
         }
 
         $curl_handler = curl_init();
@@ -77,7 +77,6 @@ class ApiController extends Controller
         curl_setopt($curl_handler, CURLOPT_URL, 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0');
         curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
         curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl_handler, CURLOPT_USERAGENT, 'Yii2 + Angular 2 Test Project');
 
         $_response = [];
         foreach($cursID as $curID){
@@ -126,6 +125,7 @@ class ApiController extends Controller
         $dateTo = new \DateTime(Json::decode($request->post('dateTo')));
 
         $curl_handler = curl_init();
+        curl_setopt($curl_handler, CURLOPT_CONNECTTIMEOUT, 2);
         curl_setopt($curl_handler, CURLOPT_RETURNTRANSFER, 1);
 
         $_response = [];
