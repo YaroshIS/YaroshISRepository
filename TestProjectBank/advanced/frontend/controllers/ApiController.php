@@ -11,6 +11,7 @@ namespace frontend\controllers;
 use yii\web\Controller;
 use Yii;
 use yii\helpers\Json;
+use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
 class ApiController extends Controller
@@ -155,6 +156,14 @@ class ApiController extends Controller
         return $_response;
     }
 
+    public function actionGetUserInfo(){
+        $info = Yii::$app->authManager->getPermissionsByUser(Yii::$app->user->getId());
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        return $info;
+    }
+
     private function log_msg($msg)
     {
         $logFile = fopen('log.txt', 'a+');
@@ -165,6 +174,10 @@ class ApiController extends Controller
     // Отключаем CSRF токены для POST экшенов
     public function beforeAction($action)
     {
+        if(Yii::$app->user->isGuest){
+            throw new ForbiddenHttpException('Access denied');
+        }
+
         if ($action->id == "get-currencies-rate-on-range" || $action->id == "get-currencies-rate-on-dates")
             $this->enableCsrfValidation = false;
 
