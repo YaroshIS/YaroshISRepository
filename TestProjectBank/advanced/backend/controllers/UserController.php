@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\CreateUserForm;
 use Codeception\Exception\Fail;
 use Yii;
 use common\models\User;
@@ -31,8 +32,9 @@ class UserController extends Controller
         ];
     }
 
-    public function beforeAction($action){
-        if(!Yii::$app->user->can('viewAdminPage')){
+    public function beforeAction($action)
+    {
+        if (!Yii::$app->user->can('viewAdminPage')) {
             throw new ForbiddenHttpException('Access denied');
         }
         return parent::beforeAction($action);
@@ -82,15 +84,25 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-        $model = new User();
+        $model = new CreateUserForm();
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->Create()) {
+                    $model = $this->findModel($user->id);
+                    $role = Yii::$app->authManager->getRolesByUser($user->id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+                    return $this->render('view', [
+                        'model' => $model,
+                        'role' => current($role)
+                    ]);
+            }
         }
+
+        $roles = Yii::$app->authManager->getRoles();
+
+        return $this->render('create', [
+            'model' => $model,
+            'roles' => $roles
+        ]);
     }
 
     /**
@@ -104,8 +116,8 @@ class UserController extends Controller
         $model = $this->findModel($id);
         $roles = Yii::$app->authManager->getRoles();
 
-        if (Yii::$app->request->isPost){
-            if($model->load(Yii::$app->request->post()) && $model->save()){
+        if (Yii::$app->request->isPost) {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             $selectedRole = Yii::$app->request->post('selectedRole');
@@ -116,7 +128,8 @@ class UserController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                'roles' => $roles
+                'roles' => $roles,
+                'model' => $model
             ]);
         }
     }
