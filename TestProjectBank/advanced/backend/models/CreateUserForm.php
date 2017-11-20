@@ -67,7 +67,7 @@ class CreateUserForm extends Model
             $authRole = $auth->getRole($this->role);
             $auth->assign($authRole, $user->getId());
 
-            if(!$authRole){
+            if (!$authRole) {
                 return null;
             }
 

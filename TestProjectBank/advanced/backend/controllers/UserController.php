@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\CreateUserForm;
-use Codeception\Exception\Fail;
+use backend\models\RBACManager;
 use Yii;
 use common\models\User;
 use backend\models\SearchUser;
@@ -38,7 +38,6 @@ class UserController extends Controller
             throw new ForbiddenHttpException('Access denied');
         }
         return parent::beforeAction($action);
-
     }
 
 
@@ -69,11 +68,11 @@ class UserController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        $role = Yii::$app->authManager->getRolesByUser($id);
+        $role = RBACManager::GetRoleByID($id);
 
         return $this->render('view', [
             'model' => $model,
-            'role' => current($role),
+            'role' => $role,
         ]);
     }
 
@@ -87,13 +86,10 @@ class UserController extends Controller
         $model = new CreateUserForm();
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->Create()) {
-                    $model = $this->findModel($user->id);
-                    $role = Yii::$app->authManager->getRolesByUser($user->id);
-
-                    return $this->render('view', [
-                        'model' => $model,
-                        'role' => current($role)
-                    ]);
+                Yii::$app->session->setFlash('success', 'The user was succesfully created');
+                return $this->redirect(['view', 'id' => $user->getId()]);
+            } else {
+                Yii::$app->session->setFlash('error', 'Error');
             }
         }
 
@@ -114,17 +110,17 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $roles = Yii::$app->authManager->getRoles();
+        $roles = RBACManager::GetRoles();
 
         if (Yii::$app->request->isPost) {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             $selectedRole = Yii::$app->request->post('selectedRole');
-            $role = Yii::$app->authManager->getRole($selectedRole);
-            Yii::$app->authManager->revokeAll($id);
-            Yii::$app->authManager->assign($role, $id);
 
+            RBACManager::UpdateUserRole($id, $selectedRole);
+
+            Yii::$app->session->setFlash('success', 'The user was succesfully updated');
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -142,8 +138,10 @@ class UserController extends Controller
      */
     public function actionDelete($id)
     {
+        RBACManager::RevokeUserRole($id);
         $this->findModel($id)->delete();
 
+        Yii::$app->session->setFlash('success', 'The user was succesfully deleted');
         return $this->redirect(['index']);
     }
 

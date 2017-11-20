@@ -156,9 +156,6 @@ class SiteController extends Controller
      */
     public function actionAbout()
     {
-        if (!\Yii::$app->user->can('viewAdminPage')) {
-            throw new Exception('viewAdminPage Access denied');
-        }
         return $this->render('about');
     }
 
@@ -231,22 +228,4 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
-
-
-    private function log_msg($msg)
-    {
-        $logFile = fopen('log.txt', 'a+');
-        fwrite($logFile, $msg . "\n");
-        fclose($logFile);
-    }
-
-    public function beforeAction($action)
-    {
-        $this->log_msg('before action: '.microtime());
-        if ($action->id == "get-currencies-rate-on-range" || $action->id == "get-currencies-rate-on-dates")
-            $this->enableCsrfValidation = false;
-
-        return parent:: beforeAction($action);
-    }
-
 }

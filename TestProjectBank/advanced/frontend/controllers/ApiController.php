@@ -156,7 +156,21 @@ class ApiController extends Controller
         return $_response;
     }
 
+    // GET запрос на получение информации о текущем пользователе
     public function actionGetUserInfo(){
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+
+        if(!$request->isGet){
+            $response->statusCode = 400;
+            $response->send();
+            return false;
+        }
+
+        $response->headers->add('Access-Control-Allow-Origin', "*");
+        $response->headers->add('Access-Control-Allow-Methods', 'GET');
+
+
         $info = Yii::$app->authManager->getPermissionsByUser(Yii::$app->user->getId());
 
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -164,13 +178,7 @@ class ApiController extends Controller
         return $info;
     }
 
-    private function log_msg($msg)
-    {
-        $logFile = fopen('log.txt', 'a+');
-        fwrite($logFile, $msg . "\n");
-        fclose($logFile);
-    }
-
+    // Закрываем доступ неавторизированным пользоваетлям
     // Отключаем CSRF токены для POST экшенов
     public function beforeAction($action)
     {
